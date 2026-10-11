@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Beheer — Nail Bar by Fran</title>
 <meta name="robots" content="noindex,nofollow">
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..700&display=swap" rel="stylesheet">
+<link rel="preload" href="/fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/style.css">
 <link rel="icon" type="image/png" href="/favicon.png">
 <style>
@@ -86,7 +86,7 @@ table.tbl{width:100%;border-collapse:collapse;font-size:14px}
 <header class="nav"><div class="wrap"><a class="logo" href="/"><img src="/logo.png" alt="Nail Bar by Fran"></a><nav class="links"><div class="r"><button class="btn small ghost" id="out" hidden>Uitloggen</button></div></nav></div></header>
 <section style="padding-top:36px"><div class="wrap" id="app"><span class="spinner"></span></div></section>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="/js/supabase.js"></script>
 <script src="/config.js"></script>
 <script>
 const app = document.getElementById("app"), esc = NBF.esc, $ = s => app.querySelector(s);

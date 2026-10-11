@@ -1,3 +1,5 @@
+@font-face{font-family:"Archivo";font-style:normal;font-display:swap;font-weight:100 900;font-stretch:62% 125%;src:url(/fonts/archivo.woff2) format("woff2-variations"),url(/fonts/archivo.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Archivo";font-style:normal;font-display:swap;font-weight:100 900;font-stretch:62% 125%;src:url(/fonts/archivo-ext.woff2) format("woff2-variations"),url(/fonts/archivo-ext.woff2) format("woff2");unicode-range:U+0100-02AF,U+1E00-1E9F,U+20A0-20AB,U+20AD-20C0,U+2C60-2C7F,U+A720-A7FF}
 :root{
   --bg:#FFFFFF; --panel:#F7F4EF; --pink:#FFE4ED; --pink-d:#F9CBDA; --sand:#EFE8DE; --sand-d:#E2D6C6;
   --ink:#686561; --ink-d:#4A4744; --muted:#9A9692; --line:#E9E3DA;
@@ -200,3 +202,13 @@ footer a{color:inherit}
 .ig-tile{min-width:0}
 .ig-tile b{overflow-wrap:anywhere}
 @media(max-width:760px){.ig-tile{padding:16px;padding-bottom:18px}.ig-tile b{font-size:14px}.ig-tile span:last-child{font-size:12px}.wa-float{width:50px;height:50px;right:14px;bottom:14px}}
+
+.legal{max-width:760px;margin:0 auto}
+.legal h1{font-size:clamp(30px,4vw,46px);margin:12px 0 22px}
+.legal h2{font-size:19px;margin:34px 0 10px}
+.legal p,.legal li{color:var(--ink);font-size:15.5px;line-height:1.7}
+.legal p.lead{font-size:17px;color:var(--ink-d)}
+.legal ul{padding-left:20px;margin:8px 0}
+.legal li{margin:4px 0}
+.legal b{color:var(--ink-d);font-weight:500}
+.legal a{color:var(--brand)}
