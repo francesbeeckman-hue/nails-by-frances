@@ -500,15 +500,25 @@ async function viewHours(){
         <input type="time" id="ls" value="${(st.lunch_start||"12:30").slice(0,5)}" step="900"><input type="time" id="le" value="${(st.lunch_end||"13:00").slice(0,5)}" step="900"></div>
       <button class="btn small" id="sv2">Opslaan</button><div id="pm2"></div></div>`;
   $("#sv").onclick = async () => {
-    const rows = [...body.querySelectorAll(".hrow")].map(r => { const i = r.querySelectorAll("input"); return { weekday:+r.dataset.w, is_open:i[0].checked, open_time:i[1].value, close_time:i[2].value }; });
-    if (rows.some(r => r.close_time <= r.open_time)) return flash($("#hm"), "Sluitingstijd moet na openingstijd liggen.", "err");
+    const hm = t => (t || "").slice(0,5);
+    const rows = [...body.querySelectorAll(".hrow[data-w]")].map(r => { const i = r.querySelectorAll("input"); return { weekday:+r.dataset.w, is_open:i[0].checked, open_time:hm(i[1].value), close_time:hm(i[2].value) }; });
+    const names = ["","maandag","dinsdag","woensdag","donderdag","vrijdag","zaterdag","zondag"];
+    for (const r of rows) {
+      const bad = !r.open_time || !r.close_time || r.close_time <= r.open_time;
+      if (bad && r.is_open) return flash($("#hm"), `Controleer de tijden van ${names[r.weekday]}: de sluitingstijd moet na de openingstijd liggen.`, "err");
+      if (bad) { r.open_time = "09:00"; r.close_time = "17:00"; }
+    }
+    await db.auth.getSession();
     const { error } = await db.from("opening_hours").upsert(rows);
     error ? flash($("#hm"), NBF.errMsg(error), "err") : flash($("#hm"), "Opgeslagen ✓");
   };
   $("#sv2").onclick = async () => {
     const lon = $("#lon").checked, ls = $("#ls").value, le = $("#le").value;
     if (lon && (!ls || !le || le <= ls)) return flash($("#pm2"), "De lunchpauze moet eindigen na de begintijd.", "err");
-    const rec = { id:true, buffer_min:+$("#buf").value, slot_step_min:+$("#step").value, vat_rate:+$("#vat").value, lunch_start: lon ? ls : null, lunch_end: lon ? le : null };
+    const rec = { id:true, buffer_min:+$("#buf").value, slot_step_min:+$("#step").value, vat_rate:+$("#vat").value };
+    if ("lunch_start" in settings) Object.assign(rec, { lunch_start: lon ? ls : null, lunch_end: lon ? le : null });
+    else if (lon) return flash($("#pm2"), NBF.errMsg({ message:"lunch_start" }), "err");
+    await db.auth.getSession();
     const { error } = await db.from("settings").upsert(rec);
     if (error) return flash($("#pm2"), NBF.errMsg(error), "err");
     settings = { ...settings, ...rec }; flash($("#pm2"), "Opgeslagen ✓");

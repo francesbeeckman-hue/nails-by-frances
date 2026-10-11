@@ -23,4 +23,12 @@ NBF.toISO = (ymd, hm = "00:00") => {
   return new Date(t).toISOString();
 };
 NBF.addDays = (ymd, n) => { const [y,m,d] = ymd.split("-").map(Number); const t = new Date(Date.UTC(y,m-1,d+n)); return t.toISOString().slice(0,10); };
-NBF.errMsg = e => (e && (e.message || e.error_description)) || "Er ging iets mis. Probeer het opnieuw.";
+NBF.errMsg = e => {
+  const m = (e && (e.message || e.error_description)) || "";
+  if (/jwt|token.*expired|not authenticated|invalid claim/i.test(m)) return "Je sessie was verlopen. Ververs de pagina en probeer het opnieuw.";
+  if (/lunch_(start|end)/i.test(m)) return "De lunchpauze is nog niet geactiveerd in de database (stap 006 in Supabase).";
+  if (/invalid input syntax for type time/i.test(m)) return "Vul bij elke open dag een geldige begin- en eindtijd in.";
+  if (/opening_hours_check|check constraint/i.test(m)) return "De sluitingstijd moet na de openingstijd liggen.";
+  if (/failed to fetch|network/i.test(m)) return "Geen verbinding. Controleer je internet en probeer het opnieuw.";
+  return m || "Er ging iets mis. Probeer het opnieuw.";
+};
