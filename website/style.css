@@ -276,3 +276,4 @@ footer a{color:var(--text)}
 .legal b{color:var(--ink);font-weight:500}
 .legal a{color:var(--brand)}
 .page-pad{padding:80px 0}
+.treat{padding-bottom:40px}.treat+.prices{padding-top:70px;border-top:1px solid var(--line)}
