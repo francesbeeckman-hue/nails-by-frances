@@ -233,7 +233,7 @@ function ics(){
   const body = ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Nail Bar by Fran//NL","BEGIN:VEVENT",
     "UID:"+r.id+"@nailbarbyfran","DTSTAMP:"+f(new Date().toISOString()),"DTSTART:"+f(r.starts_at),"DTEND:"+f(r.ends_at),
     "SUMMARY:"+r.service_name+(r.extras?" + "+r.extras:"")+" – Nail Bar by Fran","LOCATION:Magdalena van Weerdenburglaan 36\\, 1934 GL Egmond aan den Hoef","DESCRIPTION:Annuleren? "+cancel,"END:VEVENT","END:VCALENDAR"].join("\r\n");
-  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([body],{type:"text/calendar"})); a.download = "afspraak-nail-bar-by-fran.ics"; a.click();
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([body],{type:"text/calendar"})); a.download = "afspraak-nailbarbyfran.ics"; a.click();
 }
 
 function stepDone(){

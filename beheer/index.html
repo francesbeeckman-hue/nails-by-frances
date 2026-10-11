@@ -376,7 +376,7 @@ async function viewCustomers(){
   draw();
   $("#q").oninput = e => draw(e.target.value);
   $("#exp").onclick = () => csv([["Naam","Telefoon","E-mail","Bezoeken","Niet gekomen","Eerste bezoek","Laatste bezoek","Volgende afspraak","Totaal besteed"],
-    ...list.map(c=>[c.name,c.phone,c.email,c.visits,c.ns,c.first?dayKey(c.first):"",c.last?dayKey(c.last):"",c.next?dayKey(c.next):"",(c.spent/100).toFixed(2).replace(".",",")])], "klanten-nail-bar-by-fran.csv");
+    ...list.map(c=>[c.name,c.phone,c.email,c.visits,c.ns,c.first?dayKey(c.first):"",c.last?dayKey(c.last):"",c.next?dayKey(c.next):"",(c.spent/100).toFixed(2).replace(".",",")])], "klanten-nailbarbyfran.csv");
 }
 
 /* ---------- BOEKHOUDING ---------- */
@@ -431,7 +431,7 @@ async function viewBooks(){
     ...mp.map(b=>{ const a = amount(b), v = vatOf(a); return [dayKey(b.starts_at), NBF.time(b.starts_at), b.customer_name, fullSvc(b), b.payment_method, (a/100).toFixed(2).replace(".",","), rate+"%", (v/100).toFixed(2).replace(".",","), ((a-v)/100).toFixed(2).replace(".",",")]; }),
     [], ["Totaal","","","","",(mRev/100).toFixed(2).replace(".",","),"",(vatOf(mRev)/100).toFixed(2).replace(".",","),((mRev-vatOf(mRev))/100).toFixed(2).replace(".",",")],
     ["Waarvan pin","","","","",(mPin/100).toFixed(2).replace(".",",")], ["Waarvan contant","","","","",(mCash/100).toFixed(2).replace(".",",")]],
-    `omzet-${bookMonth}-nail-bar-by-fran.csv`);
+    `omzet-${bookMonth}-nailbarbyfran.csv`);
 }
 
 /* ---------- AGENDA DICHTZETTEN ---------- */

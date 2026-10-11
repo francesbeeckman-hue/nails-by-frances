@@ -83,7 +83,7 @@ async function sendMail(to, tpl, b) {
   if (!key) throw new Error("RESEND_API_KEY ontbreekt");
   const t = templates[tpl](b);
   const body = { from: FROM, to: [to], subject: t.subject, html: t.html, reply_to: FRAN };
-  if (t.attach) body.attachments = [{ filename: "afspraak-nail-bar-by-fran.ics", content: Buffer.from(ics(b)).toString("base64") }];
+  if (t.attach) body.attachments = [{ filename: "afspraak-nailbarbyfran.ics", content: Buffer.from(ics(b)).toString("base64") }];
   const r = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" }, body: JSON.stringify(body) });
   if (!r.ok) throw new Error(`Resend ${r.status}: ${await r.text()}`);
   return r.json();

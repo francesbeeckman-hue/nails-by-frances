@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
     if (!r.ok) { res.statusCode = 403; return res.end("Ongeldige agenda-link"); }
     const ics = await r.json();
     res.setHeader("Content-Type", "text/calendar; charset=utf-8");
-    res.setHeader("Content-Disposition", 'inline; filename="nail-bar-by-fran.ics"');
+    res.setHeader("Content-Disposition", 'inline; filename="nailbarbyfran.ics"');
     res.setHeader("Cache-Control", "no-store, max-age=0");
     res.end(ics);
   } catch (e) {
