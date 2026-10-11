@@ -160,3 +160,15 @@ section[id]{scroll-margin-top:72px}
 .extra .n{font-family:var(--display);font-stretch:125%;font-weight:500;font-size:14px}
 .extra .t{font-size:13px;color:var(--muted)}
 .extra .p{font-family:var(--display);font-stretch:125%;font-weight:500;font-size:14px}
+
+/* hero met foto */
+.hero-card{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);align-items:stretch}
+.hero-photo{position:relative;display:block;min-height:100%}
+.hero-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 28%}
+.hero-copy{align-self:end;justify-self:end}
+@media(max-width:760px){.hero-card{grid-template-columns:1fr;min-height:0}.hero-photo{height:62vh;min-height:380px}.hero-copy{justify-self:stretch}}
+.info a{color:var(--ink-d)}
+footer a{color:inherit}
+.wa-float{position:fixed;right:18px;bottom:18px;z-index:30;width:56px;height:56px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;box-shadow:0 10px 30px -8px rgba(78,54,6,.5);transition:.2s}
+.wa-float:hover{transform:translateY(-2px);background:var(--brand-h)}
+@media(min-width:761px){.hero-copy{padding-bottom:84px}}
