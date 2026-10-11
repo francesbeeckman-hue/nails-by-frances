@@ -60,6 +60,11 @@
   </div>
 </div></section>
 
+<section id="instagram" class="ig-sec" hidden><div class="wrap">
+  <div class="ig-head"><div><span class="eyebrow">Instagram</span><h2>Volg @nailbarbyfran</h2></div><a class="btn small ghost" href="https://instagram.com/nailbarbyfran" target="_blank" rel="noopener">Bekijk op Instagram</a></div>
+  <div class="ig-row" id="igrow"></div>
+</div></section>
+
 <section id="boeken" class="alt"><div class="panel-wrap"><div class="wrap">
   <div class="sec-head"><span class="eyebrow">Online boeken</span><h2>Maak je afspraak</h2><p>Je ziet direct welke tijden nog vrij zijn.</p></div>
   <div class="booking">
@@ -247,6 +252,14 @@ function stepDone(){
 }
 
 loadServices();
+
+// Instagram (via eigen /api/instagram, 6 uur gecachet)
+fetch("/api/instagram").then(r => r.ok ? r.json() : { posts: [] }).then(d => {
+  const posts = (d.posts || []).filter(p => p.img);
+  if (posts.length < 3) return;
+  $("#igrow").innerHTML = posts.map(p => `<a href="${esc(p.url)}" target="_blank" rel="noopener" class="ig-post${p.video?" vid":""}"><img src="${esc(p.img)}" alt="${esc(p.alt)}" loading="lazy" referrerpolicy="no-referrer"></a>`).join("");
+  $("#instagram").hidden = false;
+}).catch(() => {});
 </script>
 </body>
 </html>
