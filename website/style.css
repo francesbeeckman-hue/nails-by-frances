@@ -81,9 +81,9 @@ header.nav.open .burger span:nth-child(3){transform:translateY(-7.4px) rotate(-4
   .hero .mbr{display:inline}.hero .sep{display:none}
   .hero-copy .eyebrow{display:block;line-height:1.9}
   .hero-copy .eyebrow::after{content:"";display:block;width:46px;height:1px;background:rgba(255,255,255,.7);margin-top:14px}
-  .hero-photo{width:100%;overflow:hidden;-webkit-mask-image:none;mask-image:none;background:linear-gradient(180deg,#847a70 0%,#857b71 22%,#aca7a3 37%,#d3d1d2 50%,#e6e6ea 64%,#eeeef2 72%,#ddd3cc 77.5%,#a08473 80%,#9a7864 88%,#926f5b 100%)}
-  .hero-photo img{position:absolute;top:0;bottom:0;left:34%;height:100%;width:auto;max-width:none;object-fit:initial;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 30%);mask-image:linear-gradient(90deg,transparent 0,#000 30%)}
-  .hero-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(40,28,18,.38) 0%,rgba(40,28,18,.18) 55%,rgba(40,28,18,.05) 100%),linear-gradient(180deg,rgba(40,28,18,.05) 0%,rgba(40,28,18,.12) 50%,rgba(40,28,18,.45) 100%)}
+  .hero-photo{width:100%;-webkit-mask-image:none;mask-image:none}
+  .hero-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(40,28,18,.10) 0%,rgba(40,28,18,.30) 45%,rgba(40,28,18,.55) 100%)}
+  .hero-photo img{object-position:50% 40%}
   .hero-copy{padding:86px 0 110px}
   .hero-copy .eyebrow{color:rgba(255,255,255,.85)}
   .hero-copy h1{color:#fff;font-size:clamp(38px,10.4vw,50px);line-height:1.02;margin:18px 0 18px;max-width:290px}
