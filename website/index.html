@@ -105,7 +105,7 @@
 
 <section id="info" class="contact"><div class="wrap">
   <div class="info">
-    <div><span class="eyebrow">Openingstijden</span><h3 id="oh-title">Ma – vr</h3><p id="oh-lines">09:00 – 17:00<br>Weekend gesloten</p></div>
+    <div><span class="eyebrow">Openingstijden</span><h3 id="oh-title">&nbsp;</h3><p id="oh-lines">&nbsp;</p></div>
     <div><span class="eyebrow">Locatie</span><h3>Egmond aan den Hoef</h3><p>Magdalena van Weerdenburglaan 36<br>1934 GL Egmond aan den Hoef</p><p style="margin-top:16px"><a class="textlink" href="https://www.google.com/maps/search/?api=1&query=Magdalena+van+Weerdenburglaan+36+1934GL+Egmond+aan+den+Hoef" target="_blank" rel="noopener">Route plannen →</a></p></div>
     <div><span class="eyebrow">Contact</span><h3>Vragen?</h3><p><a href="https://wa.me/31648886908" target="_blank" rel="noopener">WhatsApp: 06 48 88 69 08</a><br><a href="mailto:nails.byfran@outlook.com">nails.byfran@outlook.com</a><br><a href="https://instagram.com/nailbarbyfran" target="_blank" rel="noopener">@nailbarbyfran</a></p></div>
   </div>
@@ -296,12 +296,23 @@ const onScroll = () => nav.classList.toggle("scrolled", window.scrollY > 10); wi
 // Openingstijden live uit de database (zelfde als in het beheer)
 db.from("opening_hours").select("*").order("weekday").then(({ data }) => {
   if (!data || !data.length) return;
-  const D = ["", "ma", "di", "wo", "do", "vr", "za", "zo"], t = x => x.slice(0, 5);
-  const groups = [];
-  data.forEach(h => {
-    const key = h.is_open ? t(h.open_time) + " – " + t(h.close_time) : "gesloten";
-    const g = groups[groups.length - 1];
-    if (g && g.key === key && g.to === h.weekday - 1) g.to = h.weekday; else groups.push({ key, from: h.weekday, to: h.weekday });
+  const D = ["", "ma", "di", "wo", "do", "vr", "za", "zo"], t = x => String(x || "").slice(0, 5);
+  const cap = x => x.charAt(0).toUpperCase() + x.slice(1);
+  // dagen -> "ma – do, za"
+  const fmtDays = ds => { const out = []; let s = null, p = null;
+    ds.forEach(d => { if (s !== null && d === p + 1) { p = d; return; } if (s !== null) out.push(s === p ? D[s] : (p === s + 1 ? D[s] + ", " + D[p] : D[s] + " – " + D[p])); s = p = d; });
+    if (s !== null) out.push(s === p ? D[s] : (p === s + 1 ? D[s] + ", " + D[p] : D[s] + " – " + D[p])); return out.join(", "); };
+  const byKey = new Map();
+  data.forEach(h => { const k = h.is_open ? t(h.open_time) + " – " + t(h.close_time) : "gesloten"; if (!byKey.has(k)) byKey.set(k, []); byKey.get(k).push(h.weekday); });
+  const openDays = data.filter(h => h.is_open).map(h => h.weekday);
+  if (!openDays.length) { $("#oh-title").textContent = "Tijdelijk gesloten"; $("#oh-lines").textContent = "Neem contact op via WhatsApp"; return; }
+  $("#oh-title").textContent = cap(fmtDays(openDays));
+  const openKeys = [...byKey.keys()].filter(k => k !== "gesloten");
+  const lines = openKeys.length === 1 ? [esc(openKeys[0])] : openKeys.map(k => `${esc(cap(fmtDays(byKey.get(k))))}: ${esc(k)}`);
+  const closed = byKey.get("gesloten");
+  if (closed) lines.push(closed.join() === "6,7" ? "Weekend gesloten" : `${esc(cap(fmtDays(closed)))}: gesloten`);
+  $("#oh-lines").innerHTML = lines.join("<br>");
+});
   });
   const days = g => g.from === g.to ? D[g.from] : D[g.from] + " – " + D[g.to];
   const cap = x => x.charAt(0).toUpperCase() + x.slice(1);

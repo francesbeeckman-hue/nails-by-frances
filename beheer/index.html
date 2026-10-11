@@ -510,7 +510,8 @@ async function viewHours(){
     }
     await db.auth.getSession();
     const { error } = await db.from("opening_hours").upsert(rows);
-    error ? flash($("#hm"), NBF.errMsg(error), "err") : flash($("#hm"), "Opgeslagen ✓");
+    if (error) return flash($("#hm"), NBF.errMsg(error), "err");
+    await viewHours(); flash($("#hm"), "Opgeslagen ✓ De website toont de nieuwe tijden direct.");
   };
   $("#sv2").onclick = async () => {
     const lon = $("#lon").checked, ls = $("#ls").value, le = $("#le").value;
