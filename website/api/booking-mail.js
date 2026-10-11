@@ -2,11 +2,12 @@
 const crypto = require("crypto");
 const { sendMail, isPlaceholder, FRAN } = require("./_mail");
 
-const safeEq = (a, b) => { a = Buffer.from(String(a || "")); b = Buffer.from(String(b || "")); return a.length === b.length && crypto.timingSafeEqual(a, b); };
+const safeEq = (a, b) => { a = Buffer.from(String(a || "").trim()); b = Buffer.from(String(b || "").trim()); return a.length === b.length && crypto.timingSafeEqual(a, b); };
 
 module.exports = async (req, res) => {
   if (req.method !== "POST") { res.statusCode = 405; return res.end(); }
-  if (!process.env.WEBHOOK_SECRET || !safeEq(req.headers["x-webhook-secret"], process.env.WEBHOOK_SECRET)) { res.statusCode = 401; return res.end("unauthorized"); }
+  if (!process.env.WEBHOOK_SECRET) { res.statusCode = 401; return res.end("unauthorized: WEBHOOK_SECRET ontbreekt in Vercel (project nails-by-frances-website)"); }
+  if (!safeEq(req.headers["x-webhook-secret"], process.env.WEBHOOK_SECRET)) { res.statusCode = 401; return res.end("unauthorized: WEBHOOK_SECRET in Vercel komt niet overeen met de database (eindigt in Vercel op ..." + String(process.env.WEBHOOK_SECRET).trim().slice(-4) + ")"); }
   const p = typeof req.body === "string" ? JSON.parse(req.body || "{}") : (req.body || {});
   const b = p.record, old = p.old_record;
   if (!b || !b.id) { res.statusCode = 400; return res.end("no record"); }

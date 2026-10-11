@@ -2,7 +2,7 @@
 const { sendMail, sb, isPlaceholder, amsMidnightISO } = require("./_mail");
 
 module.exports = async (req, res) => {
-  const secret = process.env.CRON_SECRET;
+  const secret = (process.env.CRON_SECRET || "").trim();
   if (!secret || req.headers.authorization !== `Bearer ${secret}`) { res.statusCode = 401; return res.end("unauthorized"); }
   const from = amsMidnightISO(1), to = amsMidnightISO(2);
   const rows = await sb(`bookings?select=*&status=eq.confirmed&reminder_sent_at=is.null&starts_at=gte.${encodeURIComponent(from)}&starts_at=lt.${encodeURIComponent(to)}&order=starts_at`);
