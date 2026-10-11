@@ -3,17 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Nails by Frances — Nagelstyliste | Online afspraak maken</title>
+<title>Nail Bar by Fran — Nagelstyliste | Online afspraak maken</title>
 <meta name="description" content="Gellak, BIAB en gelnagels door Frances. Boek je afspraak eenvoudig online — kies je behandeling en een tijd die jou past.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='30' fill='%23FFE4ED'/><text x='32' y='42' font-family='Arial' font-weight='700' font-size='28' text-anchor='middle' fill='%23686561'>F</text></svg>">
+<link rel="icon" type="image/png" href="/favicon.png">
 </head>
 <body>
 <div class="announce">Online boeken · kosteloos annuleren tot 24 uur van tevoren</div>
 <header class="nav"><div class="wrap">
-  <a class="logo" href="#top">Nails <em>by</em> Frances</a>
+  <a class="logo" href="#top"><img src="/logo.png" alt="Nail Bar by Fran"></a>
   <nav class="links">
     <div class="l"><a href="#behandelingen">Behandelingen</a><a href="#werk">Werk</a><a href="#info">Info</a></div>
     <div class="r"><a class="btn small ghost" href="#boeken">Afspraak maken</a></div>
@@ -64,7 +64,7 @@
 </div></section>
 </main>
 
-<footer><div class="wrap"><span>© <span id="yr"></span> Nails by Frances</span><span>Gellak · BIAB · Gelnagels</span></div></footer>
+<footer><div class="wrap"><span>© <span id="yr"></span> Nail Bar by Fran</span><span>Gellak · BIAB · Gelnagels</span></div></footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="/config.js"></script>
@@ -190,10 +190,10 @@ function stepDetails(){
 function ics(){
   const r = S.result, f = iso => new Date(iso).toISOString().replace(/[-:]/g,"").replace(/\.\d+/,"");
   const cancel = location.origin + "/annuleren?t=" + r.cancel_token;
-  const body = ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Nails by Frances//NL","BEGIN:VEVENT",
-    "UID:"+r.id+"@nailsbyfrances","DTSTAMP:"+f(new Date().toISOString()),"DTSTART:"+f(r.starts_at),"DTEND:"+f(r.ends_at),
-    "SUMMARY:"+r.service_name+" – Nails by Frances","DESCRIPTION:Annuleren? "+cancel,"END:VEVENT","END:VCALENDAR"].join("\r\n");
-  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([body],{type:"text/calendar"})); a.download = "afspraak-nails-by-frances.ics"; a.click();
+  const body = ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Nail Bar by Fran//NL","BEGIN:VEVENT",
+    "UID:"+r.id+"@nailbarbyfran","DTSTAMP:"+f(new Date().toISOString()),"DTSTART:"+f(r.starts_at),"DTEND:"+f(r.ends_at),
+    "SUMMARY:"+r.service_name+" – Nail Bar by Fran","DESCRIPTION:Annuleren? "+cancel,"END:VEVENT","END:VCALENDAR"].join("\r\n");
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([body],{type:"text/calendar"})); a.download = "afspraak-nail-bar-by-fran.ics"; a.click();
 }
 
 function stepDone(){

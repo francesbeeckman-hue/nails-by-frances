@@ -2,10 +2,11 @@
 <html lang="nl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Beheer — Nails by Frances</title>
+<title>Beheer — Nail Bar by Fran</title>
 <meta name="robots" content="noindex,nofollow">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css">
+<link rel="icon" type="image/png" href="/favicon.png">
 <style>
 .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:28px;overflow-x:auto}
 .tabs button{all:unset;cursor:pointer;padding:14px 18px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
@@ -40,8 +41,8 @@
 </style>
 </head>
 <body>
-<div class="announce">Beheer · Nails by Frances</div>
-<header class="nav"><div class="wrap"><a class="logo" href="/">Nails <em>by</em> Frances</a><nav class="links"><div class="r"><button class="btn small ghost" id="out" hidden>Uitloggen</button></div></nav></div></header>
+<div class="announce">Beheer · Nail Bar by Fran</div>
+<header class="nav"><div class="wrap"><a class="logo" href="/"><img src="/logo.png" alt="Nail Bar by Fran"></a><nav class="links"><div class="r"><button class="btn small ghost" id="out" hidden>Uitloggen</button></div></nav></div></header>
 <section style="padding-top:48px"><div class="wrap" id="app"><span class="spinner"></span></div></section>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -78,7 +79,7 @@ function loginView(err){
 }
 
 function render(){
-  const T = { afspraken:"Afspraken", dicht:"Agenda dichtzetten", tijden:"Openingstijden", behandelingen:"Behandelingen", account:"Account" };
+  const T = { afspraken:"Afspraken", dicht:"Agenda dichtzetten", tijden:"Openingstijden &amp; planning", behandelingen:"Behandelingen", account:"Account" };
   app.innerHTML = `<div class="tabs">${Object.entries(T).map(([k,v])=>`<button data-t="${k}" class="${k===tab?"on":""}">${v}</button>`).join("")}</div><div id="body"><span class="spinner"></span></div>`;
   app.querySelectorAll(".tabs button").forEach(b => b.onclick = () => { tab = b.dataset.t; render(); });
   ({ afspraken: viewBookings, dicht: viewBlocks, tijden: viewHours, behandelingen: viewServices, account: viewAccount })[tab]();
@@ -189,13 +190,22 @@ async function viewBlocks(){
 /* ---------- OPENINGSTIJDEN ---------- */
 async function viewHours(){
   const body = $("#body"); const names = ["","Maandag","Dinsdag","Woensdag","Donderdag","Vrijdag","Zaterdag","Zondag"];
-  const { data, error } = await db.from("opening_hours").select("*").order("weekday");
+  const [{ data, error }, { data: sts }] = await Promise.all([db.from("opening_hours").select("*").order("weekday"), db.from("settings").select("*").limit(1)]);
   if (error) return flash(body, NBF.errMsg(error), "err");
+  const st = sts && sts[0];
   body.innerHTML = `<div class="card"><h3>Vaste openingstijden</h3><p class="muted" style="margin-bottom:16px;font-size:14px">Dit is je standaardweek. Voor losse dagen gebruik je 'Agenda dichtzetten'.</p>
     ${data.map(h=>`<div class="hrow" data-w="${h.weekday}"><b style="font-weight:400">${names[h.weekday]}</b>
       <label class="chk"><input type="checkbox" ${h.is_open?"checked":""}> Open</label>
       <input type="time" value="${h.open_time.slice(0,5)}" step="900"><input type="time" value="${h.close_time.slice(0,5)}" step="900"></div>`).join("")}
-    <div style="margin-top:18px"><button class="btn small" id="sv">Opslaan</button></div><div id="hm"></div></div>`;
+    <div style="margin-top:18px"><button class="btn small" id="sv">Opslaan</button></div><div id="hm"></div></div>
+    <div class="card"><h3>Planning</h3><p class="muted" style="margin-bottom:16px;font-size:14px">Pauze na elke afspraak (opruimen, schoonmaken) en om de hoeveel minuten klanten een starttijd zien.</p>
+      <div class="grid3"><label>Pauze tussen afspraken<select id="buf">${[0,5,10,15,20,30].map(m=>`<option value="${m}" ${m===(st?.buffer_min??15)?"selected":""}>${m} minuten</option>`).join("")}</select></label>
+      <label>Starttijden<select id="step">${[[15,"Elk kwartier"],[30,"Elk half uur"],[60,"Elk heel uur"]].map(([m,t])=>`<option value="${m}" ${m===(st?.slot_step_min??30)?"selected":""}>${t}</option>`).join("")}</select></label></div>
+      <button class="btn small" id="sv2">Opslaan</button><div id="pm2"></div></div>`;
+  $("#sv2").onclick = async () => {
+    const { error } = await db.from("settings").upsert({ id:true, buffer_min:+$("#buf").value, slot_step_min:+$("#step").value });
+    error ? flash($("#pm2"), NBF.errMsg(error), "err") : flash($("#pm2"), "Opgeslagen ✓");
+  };
   $("#sv").onclick = async () => {
     const rows = [...body.querySelectorAll(".hrow")].map(r => { const i = r.querySelectorAll("input"); return { weekday:+r.dataset.w, is_open:i[0].checked, open_time:i[1].value, close_time:i[2].value }; });
     if (rows.some(r => r.close_time <= r.open_time)) return flash($("#hm"), "Sluitingstijd moet na openingstijd liggen.", "err");
