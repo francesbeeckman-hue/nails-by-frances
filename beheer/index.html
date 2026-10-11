@@ -491,10 +491,13 @@ async function viewHours(){
       <label class="chk"><input type="checkbox" ${h.is_open?"checked":""}> Open</label>
       <input type="time" value="${h.open_time.slice(0,5)}" step="900"><input type="time" value="${h.close_time.slice(0,5)}" step="900"></div>`).join("")}
     <div style="margin-top:18px"><button class="btn small" id="sv">Opslaan</button></div><div id="hm"></div></div>
-    <div class="card"><h3>Planning &amp; btw</h3><p class="muted" style="margin-bottom:16px;font-size:14px">Pauze na elke afspraak, om de hoeveel minuten klanten een starttijd zien, en je btw-tarief voor de boekhouding.</p>
+    <div class="card"><h3>Planning &amp; btw</h3><p class="muted" style="margin-bottom:16px;font-size:14px">Pauze na elke afspraak, om de hoeveel minuten klanten een starttijd zien, je btw-tarief en je vaste lunchpauze (daarin kan niemand online boeken).</p>
       <div class="grid3"><label>Pauze tussen afspraken<select id="buf">${[0,5,10,15,20,30].map(m=>`<option value="${m}" ${m===(st.buffer_min??15)?"selected":""}>${m} minuten</option>`).join("")}</select></label>
       <label>Starttijden<select id="step">${[[15,"Elk kwartier"],[30,"Elk half uur"],[60,"Elk heel uur"]].map(([m,t])=>`<option value="${m}" ${m===(st.slot_step_min??30)?"selected":""}>${t}</option>`).join("")}</select></label>
       <label>Btw-tarief<select id="vat">${[[21,"21%"],[9,"9%"],[0,"0% (KOR)"]].map(([m,t])=>`<option value="${m}" ${m===Number(st.vat_rate??21)?"selected":""}>${t}</option>`).join("")}</select></label></div>
+      <div class="hrow" style="margin:6px 0 18px"><b style="font-weight:500;color:var(--ink-d)">Lunchpauze</b>
+        <label class="chk"><input type="checkbox" id="lon" ${st.lunch_start?"checked":""}> Aan</label>
+        <input type="time" id="ls" value="${(st.lunch_start||"12:30").slice(0,5)}" step="900"><input type="time" id="le" value="${(st.lunch_end||"13:00").slice(0,5)}" step="900"></div>
       <button class="btn small" id="sv2">Opslaan</button><div id="pm2"></div></div>`;
   $("#sv").onclick = async () => {
     const rows = [...body.querySelectorAll(".hrow")].map(r => { const i = r.querySelectorAll("input"); return { weekday:+r.dataset.w, is_open:i[0].checked, open_time:i[1].value, close_time:i[2].value }; });
@@ -503,7 +506,9 @@ async function viewHours(){
     error ? flash($("#hm"), NBF.errMsg(error), "err") : flash($("#hm"), "Opgeslagen ✓");
   };
   $("#sv2").onclick = async () => {
-    const rec = { id:true, buffer_min:+$("#buf").value, slot_step_min:+$("#step").value, vat_rate:+$("#vat").value };
+    const lon = $("#lon").checked, ls = $("#ls").value, le = $("#le").value;
+    if (lon && (!ls || !le || le <= ls)) return flash($("#pm2"), "De lunchpauze moet eindigen na de begintijd.", "err");
+    const rec = { id:true, buffer_min:+$("#buf").value, slot_step_min:+$("#step").value, vat_rate:+$("#vat").value, lunch_start: lon ? ls : null, lunch_end: lon ? le : null };
     const { error } = await db.from("settings").upsert(rec);
     if (error) return flash($("#pm2"), NBF.errMsg(error), "err");
     settings = { ...settings, ...rec }; flash($("#pm2"), "Opgeslagen ✓");
