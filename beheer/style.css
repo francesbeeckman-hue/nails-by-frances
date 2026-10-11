@@ -255,3 +255,12 @@ select:hover{border-color:var(--sand-d)}
 .about-stats span{font-size:12px;letter-spacing:.06em;color:var(--ink)}
 .about .sign{font-family:var(--display);font-style:italic;color:var(--ink-d);margin:6px 0 22px}
 @media(max-width:860px){.about .wrap{grid-template-columns:1fr;gap:28px}.about-photo{max-width:420px;width:100%;margin:0 auto}}
+/* hero compacter op desktop */
+@media(min-width:761px){
+  .hero-card{min-height:0;height:clamp(520px,calc(100vh - 140px),680px);max-height:none;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr)}
+  .hero-photo img{object-position:50% 62%}
+  .hero-inset{width:min(24%,170px);margin:22px 22px 0 0}
+  .hero-copy{padding:28px 44px 40px;max-width:600px}
+  .hero-copy h1{font-size:clamp(30px,3.4vw,50px);margin:10px 0 14px}
+  .hero-copy p{margin-bottom:20px}
+}
