@@ -308,7 +308,7 @@ async function viewBookings(){
       <div class="acts"><button class="btn small" data-o="${b.id}">Afrekenen</button></div></div>`).join("")}</div>` : ""}
     <div class="card"><h3>Afspraak toevoegen</h3><p class="muted" style="margin-bottom:14px;font-size:14px">Voor afspraken die via telefoon, Instagram of WhatsApp binnenkomen.</p>
       <form id="af"><div class="grid4">
-        <label>Behandeling<select name="svc">${services.filter(s=>s.active && !s.is_extra).map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join("")}</select></label>
+        <label>Behandeling<select name="svc" required><option value="" disabled selected>Kies een behandeling…</option>${[...new Set(services.filter(s=>s.active && !s.is_extra).map(s=>s.category||"Overig"))].map(c=>`<optgroup label="${esc(c)}">${services.filter(s=>s.active && !s.is_extra && (s.category||"Overig")===c).map(s=>`<option value="${s.id}">${esc(s.name)} · ${NBF.euro(s.price_cents)} · ${NBF.dur(s.duration_min)}</option>`).join("")}</optgroup>`).join("")}</select></label>
         <label>Datum<input type="date" name="d" required></label>
         <label>Tijd<input type="time" name="t" required step="300"></label>
         <label>Naam<input name="name" required minlength="2"></label>
@@ -332,6 +332,7 @@ async function viewBookings(){
   $("#past").onchange = e => { showPast = e.target.checked; viewBookings(); };
   $("#af").onsubmit = async e => {
     e.preventDefault(); const f = new FormData(e.target), v = Object.fromEntries(f); const s = services.find(x=>x.id===v.svc);
+    if (!s) return flash($("#am"), "Kies eerst een behandeling.", "err");
     const ex = services.filter(x => f.getAll("x").includes(x.id));
     const dur = s.duration_min + ex.reduce((a,x)=>a+x.duration_min,0), price = s.price_cents + ex.reduce((a,x)=>a+x.price_cents,0);
     const start = NBF.toISO(v.d, v.t), end = new Date(new Date(start).getTime() + dur*60000).toISOString();
