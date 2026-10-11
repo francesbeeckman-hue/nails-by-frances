@@ -231,7 +231,8 @@ async function viewAgenda(){
     <div class="toolbar"><div class="grp"><button class="round" id="pw" aria-label="Vorige week">‹</button><button class="round" id="nw" aria-label="Volgende week">›</button>
       <button class="btn small ghost" id="tw">Vandaag</button>
       <b style="font-family:var(--display);font-stretch:125%;font-weight:500;color:var(--ink-d);font-size:16px;margin-left:6px">${label.format(new Date(days[0]+"T12:00:00Z"))} – ${label.format(new Date(days[6]+"T12:00:00Z"))}</b></div>
-      <div class="grp muted" style="font-size:13px">${wkBk.length} afspraken · ${NBF.euro(rev)} afgerekend${toPay?` · <span class="badge open">${toPay} nog afrekenen</span>`:""}</div></div>
+      <div class="grp"><button class="btn small ghost" id="cal">Koppel Apple / Google Agenda</button></div>
+      <div class="grp muted" style="font-size:13px;width:100%;justify-content:flex-end">${wkBk.length} afspraken · ${NBF.euro(rev)} afgerekend${toPay?` · <span class="badge open">${toPay} nog afrekenen</span>`:""}</div></div>
     <div class="wkwrap"><div class="wk">
       <div class="hd"></div>${days.map(d=>{ const w=new Date(d+"T12:00:00Z"); return `<div class="hd ${d===today?"today":""}">${new Intl.DateTimeFormat("nl-NL",{weekday:"short",timeZone:"UTC"}).format(w)}<b>${w.getUTCDate()}</b></div>`; }).join("")}
       <div class="hours" style="height:${H}px">${[...Array(endH-startH+1)].map((_,i)=>`<div class="hlab" style="top:${i*60*PX}px">${String(startH+i).padStart(2,"0")}:00</div>`).join("")}</div>
@@ -252,7 +253,35 @@ async function viewAgenda(){
   $("#pw").onclick = () => { weekStart = NBF.addDays(weekStart,-7); viewAgenda(); };
   $("#nw").onclick = () => { weekStart = NBF.addDays(weekStart,7); viewAgenda(); };
   $("#tw").onclick = () => { weekStart = mondayOf(today); viewAgenda(); };
+  $("#cal").onclick = openCalendarLink;
   body.querySelectorAll(".ev[data-id]").forEach(x => x.onclick = () => openBooking(bk.find(b=>b.id===x.dataset.id)));
+}
+
+/* ---------- AGENDA-KOPPELING (Apple / Google) ---------- */
+async function openCalendarLink(){
+  const m = document.createElement("div"); m.className = "modal";
+  m.innerHTML = `<div class="box"><span class="spinner"></span></div>`; document.body.appendChild(m);
+  m.onclick = e => { if (e.target === m) m.remove(); };
+  const { data, error } = await db.from("private_settings").select("calendar_token").limit(1);
+  const box = m.querySelector(".box");
+  if (error || !data || !data[0]) { box.innerHTML = `<h3>Nog niet beschikbaar</h3><p class="muted" style="margin:10px 0 16px">Plak eerst database-update 003 (Apple Agenda) in Supabase.</p><button class="btn small ghost" id="close">Sluiten</button>`; box.querySelector("#close").onclick = () => m.remove(); return; }
+  const https = `${location.origin}/api/agenda?token=${data[0].calendar_token}`, webcal = https.replace(/^https?:/, "webcal:");
+  box.innerHTML = `<h3>Koppel je agenda</h3><p class="muted" style="margin:6px 0 16px;font-size:14px">Alle afspraken en dichte tijden verschijnen automatisch in je eigen agenda. Nieuwe boekingen en annuleringen komen er vanzelf bij.</p>
+    <a class="btn" href="${webcal}" style="width:100%">Toevoegen aan Apple Agenda</a>
+    <p class="muted" style="font-size:12.5px;margin:8px 0 18px">Op iPhone of Mac: tik op de knop en kies <b>Abonneer</b>. Zet "Automatisch verversen" op <b>elke 5 of 15 minuten</b>.</p>
+    <label style="margin:0">Link (voor Google Agenda)<input id="lnk" readonly value="${https}"></label>
+    <div class="row2"><button class="btn small ghost" id="cp">Kopieer link</button><a class="btn small ghost" href="https://calendar.google.com/calendar/u/0/r/settings/addbyurl" target="_blank" rel="noopener">Open Google Agenda</a></div>
+    <p class="muted" style="font-size:12.5px;margin:8px 0 18px">Google Agenda: Instellingen → Agenda toevoegen → <b>Via URL</b> → plak de link. Google ververst zelf, meestal een paar keer per dag.</p>
+    <p class="muted" style="font-size:12px">Deel deze link met niemand: wie hem heeft, ziet je afspraken. Link uitgelekt? <button class="link" id="rot" style="font-size:11px">Maak nieuwe link</button></p>
+    <div class="row2" style="justify-content:flex-end"><button class="btn small ghost" id="close">Sluiten</button></div><div id="cm"></div>`;
+  box.querySelector("#close").onclick = () => m.remove();
+  box.querySelector("#cp").onclick = async () => { try { await navigator.clipboard.writeText(https); box.querySelector("#cp").textContent = "Gekopieerd ✓"; } catch { box.querySelector("#lnk").select(); } };
+  box.querySelector("#rot").onclick = async () => {
+    if (!confirm("Nieuwe link maken? De oude link stopt dan met werken, ook in je agenda-apps.")) return;
+    const { error } = await db.from("private_settings").update({ calendar_token: crypto.randomUUID() }).eq("id", true);
+    if (error) return flash(box.querySelector("#cm"), NBF.errMsg(error), "err");
+    m.remove(); openCalendarLink();
+  };
 }
 
 /* ---------- AFSPRAKEN (lijst) ---------- */
