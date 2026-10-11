@@ -4,70 +4,96 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Nail Bar by Fran — BIAB & gellak in Egmond aan den Hoef | Online boeken</title>
-<meta name="description" content="BIAB en gellak door Fran in Egmond aan den Hoef. Boek je afspraak eenvoudig online — kies je behandeling en een tijd die jou past.">
-
-<link rel="preload" href="/fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
+<meta name="description" content="BIAB en gellak door Frances in Egmond aan den Hoef. Een rustige salon aan huis met persoonlijke aandacht. Boek je afspraak eenvoudig online.">
+<link rel="preload" href="/fonts/cormorant-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/jost.woff2" as="font" type="font/woff2" crossorigin>
 <meta property="og:title" content="Nail Bar by Fran — BIAB & gellak in Egmond aan den Hoef">
-<meta property="og:description" content="Boek je afspraak online. BIAB en gellak door Fran in Egmond aan den Hoef.">
+<meta property="og:description" content="Boek je afspraak online. BIAB en gellak door Frances in Egmond aan den Hoef.">
 <meta property="og:image" content="/img/og.jpg"><meta property="og:type" content="website">
+<meta name="theme-color" content="#F4EFE9">
 <link rel="stylesheet" href="/style.css">
 <link rel="icon" type="image/png" href="/favicon.png">
 </head>
 <body>
-<div class="announce">Online boeken · kosteloos annuleren tot 24 uur van tevoren</div>
-<header class="nav"><div class="wrap">
+<header class="nav" id="nav"><div class="wrap">
   <a class="logo" href="#top"><img src="/logo.png" alt="Nail Bar by Fran"></a>
-  <nav class="links">
-    <div class="l"><a href="#behandelingen">Behandelingen</a><a href="#over">Over mij</a><a href="#werk">Werk</a><a href="#info">Contact</a></div>
-    <div class="r"><a class="btn small ghost" href="#boeken">Afspraak maken</a></div>
+  <nav class="links" id="navlinks">
+    <a href="#behandelingen">Behandelingen</a><a href="#salon">De salon</a><a href="#over">Over mij</a><a href="#werk">Werk</a><a href="#info">Contact</a>
   </nav>
+  <div class="nav-r">
+    <a class="btn small ghost" href="#boeken">Afspraak maken</a>
+    <button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+  </div>
 </div></header>
 
 <main id="top">
-<section class="hero" style="padding-bottom:0"><div class="hero-card">
+<section class="hero">
   <picture class="hero-photo"><source media="(max-width:760px)" srcset="/img/salon-sm.webp" type="image/webp"><source srcset="/img/salon.webp" type="image/webp"><img src="/img/salon.jpg" alt="De salon van Nail Bar by Fran in Egmond aan den Hoef" fetchpriority="high"></picture>
-  <div class="hero-side">
-  <picture class="hero-inset"><source srcset="/img/handen-2.webp" type="image/webp"><img src="/img/handen-2.jpg" alt="Nude BIAB-nagels met tortoise-accent" loading="eager"></picture>
-  <div class="hero-copy">
-    <span class="eyebrow">Nagelstyliste · Egmond aan den Hoef</span>
-    <h1>Verzorgde nagels, met aandacht gemaakt.</h1>
-    <p>BIAB en gellak in een rustige setting. Kies je behandeling en een moment dat jou uitkomt.</p>
-    <div class="ctas"><a class="btn" href="#boeken">Plan je afspraak</a><a class="btn ghost" href="#behandelingen">Bekijk prijzen</a></div>
+  <div class="wrap hero-inner">
+    <div class="hero-copy">
+      <span class="eyebrow">Nagelstyliste · Egmond aan den Hoef</span>
+      <h1>Verzorgde nagels, met aandacht gemaakt.</h1>
+      <p>BIAB en gellak in een rustige, persoonlijke setting.</p>
+      <div class="ctas"><a class="btn arrow" href="#boeken">Plan je afspraak</a><a class="btn ghost" href="#behandelingen">Bekijk prijzen</a></div>
+    </div>
   </div>
+  <a class="hero-down" href="#features" aria-label="Scroll naar beneden"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+</section>
+
+<section class="features" id="features"><div class="wrap">
+  <div class="feat"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 26C6 14 14 6 26 6c0 12-8 20-20 20zm0 0l12-12" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Rustige<br>setting</span></div>
+  <div class="feat"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 27S4 20 4 11.5A6.5 6.5 0 0 1 16 8a6.5 6.5 0 0 1 12 3.5C28 20 16 27 16 27z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg><span>Persoonlijke<br>aandacht</span></div>
+  <div class="feat"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M13 5l2.2 6.8L22 14l-6.8 2.2L13 23l-2.2-6.8L4 14l6.8-2.2zM24 19l1 3 3 1-3 1-1 3-1-3-3-1 3-1z" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg><span>Mooie en verzorgde<br>resultaten</span></div>
+</div></section>
+
+<section class="treat"><div class="wrap">
+  <div class="treat-head">
+    <div><span class="eyebrow">Behandelingen</span><h2>Natuurlijke en verzorgde nagels.</h2></div>
+    <a class="textlink" href="#behandelingen">Bekijk alle behandelingen →</a>
+  </div>
+  <div class="treat-cards">
+    <a href="#behandelingen" class="tcard"><picture><source srcset="/img/werk-4.webp" type="image/webp"><img src="/img/werk-4.jpg" alt="Natuurlijke BIAB" loading="lazy"></picture><span>BIAB</span></a>
+    <a href="#behandelingen" class="tcard"><picture><source srcset="/img/werk-5.webp" type="image/webp"><img src="/img/werk-5.jpg" alt="Glanzende gellak" loading="lazy"></picture><span>Gellak</span></a>
+    <a href="#behandelingen" class="tcard"><picture><source srcset="/img/werk-1.webp" type="image/webp"><img src="/img/werk-1.jpg" alt="BIAB French" loading="lazy"></picture><span>French</span></a>
   </div>
 </div></section>
 
-<section id="behandelingen"><div class="wrap">
-  <div class="sec-head"><span class="eyebrow">Prijslijst</span><h2>Behandelingen</h2><p>Extra's voeg je toe bij het boeken. Je betaalt na afloop in de salon.</p></div>
+<section class="salon" id="salon"><div class="wrap">
+  <div class="salon-text">
+    <span class="eyebrow">De salon</span>
+    <h2>Een rustige,<br>fijne plek.</h2>
+    <p>Mijn salon is aan huis in Egmond aan den Hoef. Hier neem ik de tijd voor een persoonlijke behandeling in een ontspannen omgeving.</p>
+    <a class="btn ghost" href="#over">Meer over mij</a>
+    <span class="rule"></span>
+  </div>
+  <picture class="arch"><source srcset="/img/salon-sm.webp" type="image/webp"><img src="/img/salon.jpg" alt="Interieur van de salon" loading="lazy"></picture>
+</div></section>
+
+<section id="behandelingen" class="prices"><div class="wrap">
+  <div class="sec-head"><span class="eyebrow">Prijslijst</span><h2>Behandelingen &amp; prijzen</h2><p>Extra's voeg je toe bij het boeken. Je betaalt na afloop in de salon.</p></div>
   <div class="menu" id="menu"><p class="muted" style="text-align:center"><span class="spinner"></span></p></div>
-</div></section>
-
-<section class="banner-sec" style="padding:0"><div class="banner">
-  <span class="eyebrow">In vier stappen geregeld</span>
-  <h2>Kies je behandeling, pak je moment.</h2>
-  <a class="btn" href="#boeken">Afspraak maken</a>
+  <div style="text-align:center;margin-top:40px"><a class="btn arrow" href="#boeken">Plan je afspraak</a></div>
 </div></section>
 
 <section id="over" class="about"><div class="wrap">
   <picture class="about-photo"><source srcset="/img/frances.webp" type="image/webp"><img src="/img/frances.jpg" alt="Frances, nagelstyliste bij Nail Bar by Fran" loading="lazy"></picture>
   <div class="about-text">
     <span class="eyebrow">Over mij</span>
-    <h2>Hoi, ik ben Frances</h2>
+    <h2>Hoi, ik ben Frances.</h2>
     <p class="lead">Nagels zijn voor mij meer dan een behandeling: het is mijn passie. Al meer dan vijf jaar werk ik met BIAB en gellak, en nog steeds geniet ik van elk detail, van de perfecte vorm tot die ene kleur die precies bij jou past.</p>
-    <p>In mijn salon aan huis in Egmond aan den Hoef neem ik echt de tijd voor je. Geen haast, gewoon een rustig moment voor jezelf, met aandacht voor jouw wensen. Ik werk met professionele producten en zorg ervoor dat je nagels niet alleen mooi zijn, maar ook gezond en sterk blijven.</p>
+    <p>In mijn salon aan huis neem ik echt de tijd voor je. Geen haast, gewoon een rustig moment voor jezelf, met aandacht voor jouw wensen. Ik werk met professionele producten en zorg ervoor dat je nagels niet alleen mooi zijn, maar ook gezond en sterk blijven.</p>
     <p>Of je nu komt voor natuurlijke BIAB, een strakke French of een beetje nail art: ik denk graag met je mee.</p>
     <div class="about-stats"><div><b>5+</b><span>jaar ervaring</span></div><div><b>BIAB</b><span>&amp; gellak specialist</span></div><div><b>1-op-1</b><span>alle aandacht voor jou</span></div></div>
     <p class="sign">Liefs, Frances</p>
-    <a class="btn" href="#boeken">Plan je afspraak</a>
   </div>
 </div></section>
 
-<section id="werk"><div class="wrap">
+<section id="werk" class="work"><div class="wrap">
   <div class="sec-head"><span class="eyebrow">Portfolio</span><h2>Recent werk</h2><p>Meer inspiratie vind je op <a href="https://instagram.com/nailbarbyfran" target="_blank" rel="noopener">Instagram @nailbarbyfran</a>.</p></div>
   <div class="gallery">
     <figure><picture><source srcset="/img/werk-1.webp" type="image/webp"><img src="/img/werk-1.jpg" alt="BIAB French, kort en vierkant" loading="lazy"></picture><figcaption>BIAB French</figcaption></figure>
     <figure><picture><source srcset="/img/werk-2.webp" type="image/webp"><img src="/img/werk-2.jpg" alt="Subtiele micro French op naturel nagels" loading="lazy"></picture><figcaption>Micro French</figcaption></figure>
-    <figure><picture><source srcset="/img/werk-3.webp" type="image/webp"><img src="/img/werk-3.jpg" alt="Bordeaux met tortoise nail art en French-rand" loading="lazy"></picture><figcaption>Tortoise & bordeaux</figcaption></figure>
+    <figure><picture><source srcset="/img/werk-3.webp" type="image/webp"><img src="/img/werk-3.jpg" alt="Bordeaux met tortoise nail art en French-rand" loading="lazy"></picture><figcaption>Tortoise &amp; bordeaux</figcaption></figure>
     <figure><picture><source srcset="/img/werk-4.webp" type="image/webp"><img src="/img/werk-4.jpg" alt="Natuurlijke BIAB in zacht roze" loading="lazy"></picture><figcaption>BIAB Naturel</figcaption></figure>
     <figure><picture><source srcset="/img/werk-5.webp" type="image/webp"><img src="/img/werk-5.jpg" alt="Glanzende gellak in diep chocoladebruin" loading="lazy"></picture><figcaption>Chocolate gel</figcaption></figure>
     <a class="ig-tile" id="igtile" href="https://instagram.com/nailbarbyfran" target="_blank" rel="noopener"><div class="ig-mosaic" id="igmosaic"><img src="/img/handen-1.jpg" alt=""><img src="/img/handen-2.jpg" alt=""><img src="/img/handen-3.jpg" alt=""><img src="/img/werk-4.jpg" alt=""></div><div class="ig-cap"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M12 2.2c3.2 0 3.6 0 4.8.1 3.3.1 4.8 1.7 4.9 4.9.1 1.3.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 3.2-1.7 4.8-4.9 4.9-1.3.1-1.6.1-4.8.1s-3.6 0-4.8-.1c-3.3-.1-4.8-1.7-4.9-4.9C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.8C2.4 3.9 3.9 2.4 7.2 2.3 8.4 2.2 8.8 2.2 12 2.2zm0 4.6a5.2 5.2 0 1 0 0 10.4 5.2 5.2 0 0 0 0-10.4zm0 8.6a3.4 3.4 0 1 1 0-6.8 3.4 3.4 0 0 1 0 6.8zm5.4-9.9a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4z"/></svg><b>@nailbarbyfran</b><span>Bekijk meer werk →</span></div></a>
@@ -75,28 +101,32 @@
 </div></section>
 
 <section id="instagram" class="ig-sec" hidden><div class="wrap">
-  <div class="ig-head"><div><span class="eyebrow">Instagram</span><h2>Volg @nailbarbyfran</h2></div><a class="btn small ghost" href="https://instagram.com/nailbarbyfran" target="_blank" rel="noopener">Bekijk op Instagram</a></div>
+  <div class="ig-head"><div><span class="eyebrow">Instagram</span><h2>Volg @nailbarbyfran</h2></div><a class="textlink" href="https://instagram.com/nailbarbyfran" target="_blank" rel="noopener">Bekijk op Instagram →</a></div>
   <div class="ig-row" id="igrow"></div>
 </div></section>
 
-<section id="boeken" class="alt"><div class="panel-wrap"><div class="wrap">
-  <div class="sec-head"><span class="eyebrow">Online boeken</span><h2>Maak je afspraak</h2><p>Je ziet direct welke tijden nog vrij zijn.</p></div>
+<section id="boeken" class="book"><div class="wrap">
+  <div class="sec-head"><span class="eyebrow">Online boeken</span><h2>Maak je afspraak</h2><p>Je ziet direct welke tijden nog vrij zijn. Kosteloos annuleren tot 24 uur van tevoren.</p></div>
   <div class="booking">
     <div class="steps" id="steps"><span>1 · Behandeling</span><span>2 · Moment</span><span>3 · Gegevens</span><span>4 · Bevestigd</span></div>
     <div class="pane" id="pane"></div>
   </div>
-</div></div></section>
+</div></section>
 
-<section id="info"><div class="wrap">
+<section id="info" class="contact"><div class="wrap">
   <div class="info">
     <div><span class="eyebrow">Openingstijden</span><h3 id="oh-title">Ma – vr</h3><p id="oh-lines">09:00 – 17:00<br>Weekend gesloten</p></div>
-    <div><span class="eyebrow">Locatie</span><h3>Egmond aan den Hoef</h3><p>Magdalena van Weerdenburglaan 36<br>1934 GL Egmond aan den Hoef</p><p style="margin-top:14px"><a class="btn small ghost" href="https://www.google.com/maps/search/?api=1&query=Magdalena+van+Weerdenburglaan+36+1934GL+Egmond+aan+den+Hoef" target="_blank" rel="noopener">Route plannen</a></p></div>
+    <div><span class="eyebrow">Locatie</span><h3>Egmond aan den Hoef</h3><p>Magdalena van Weerdenburglaan 36<br>1934 GL Egmond aan den Hoef</p><p style="margin-top:16px"><a class="textlink" href="https://www.google.com/maps/search/?api=1&query=Magdalena+van+Weerdenburglaan+36+1934GL+Egmond+aan+den+Hoef" target="_blank" rel="noopener">Route plannen →</a></p></div>
     <div><span class="eyebrow">Contact</span><h3>Vragen?</h3><p><a href="https://wa.me/31648886908" target="_blank" rel="noopener">WhatsApp: 06 48 88 69 08</a><br><a href="mailto:nails.byfran@outlook.com">nails.byfran@outlook.com</a><br><a href="https://instagram.com/nailbarbyfran" target="_blank" rel="noopener">@nailbarbyfran</a></p></div>
   </div>
 </div></section>
 </main>
 
-<footer><div class="wrap"><span>© <span id="yr"></span> Nail Bar by Fran · KvK 86872508 · Magdalena van Weerdenburglaan 36, 1934 GL Egmond aan den Hoef</span><span><a href="https://instagram.com/nailbarbyfran" target="_blank" rel="noopener">Instagram</a> · <a href="https://wa.me/31648886908" target="_blank" rel="noopener">WhatsApp</a> · <a href="mailto:nails.byfran@outlook.com">E-mail</a> · <a href="/privacy">Privacy</a> · <a href="/voorwaarden">Voorwaarden</a></span></div></footer>
+<footer><div class="wrap">
+  <img src="/logo.png" alt="Nail Bar by Fran" class="flogo">
+  <span>© <span id="yr"></span> Nail Bar by Fran · KvK 86872508 · Magdalena van Weerdenburglaan 36, 1934 GL Egmond aan den Hoef</span>
+  <span><a href="https://instagram.com/nailbarbyfran" target="_blank" rel="noopener">Instagram</a> · <a href="https://wa.me/31648886908" target="_blank" rel="noopener">WhatsApp</a> · <a href="mailto:nails.byfran@outlook.com">E-mail</a> · <a href="/privacy">Privacy</a> · <a href="/voorwaarden">Voorwaarden</a></span>
+</div></footer>
 <a class="wa-float" href="https://wa.me/31648886908" target="_blank" rel="noopener" aria-label="Stuur een WhatsApp-bericht"><svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><path fill="currentColor" d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3zm0 23.7c-2 0-4-.5-5.7-1.6l-.4-.2-3.9 1 1-3.8-.3-.4A10.7 10.7 0 1 1 16 26.7zm5.9-8c-.3-.2-1.9-1-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7 0a8.8 8.8 0 0 1-4.4-3.8c-.3-.6.3-.5 1-1.7.1-.2 0-.4 0-.5l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6a1.2 1.2 0 0 0-.9.4 3.6 3.6 0 0 0-1.1 2.7 6.3 6.3 0 0 0 1.3 3.3 14.4 14.4 0 0 0 5.5 4.9c2 .9 2.8 1 3.9.8a3.3 3.3 0 0 0 2.1-1.5 2.7 2.7 0 0 0 .2-1.5c-.1-.2-.3-.3-.6-.4z"/></svg></a>
 
 <script src="/js/supabase.js"></script>
@@ -266,6 +296,12 @@ function stepDone(){
 }
 
 loadServices();
+
+// Mobiel menu + header-schaduw bij scrollen
+const nav = document.getElementById("nav"), burger = document.getElementById("burger");
+burger.onclick = () => { const o = nav.classList.toggle("open"); burger.setAttribute("aria-expanded", o); };
+document.querySelectorAll("#navlinks a").forEach(a => a.addEventListener("click", () => { nav.classList.remove("open"); burger.setAttribute("aria-expanded", false); }));
+const onScroll = () => nav.classList.toggle("scrolled", window.scrollY > 10); window.addEventListener("scroll", onScroll, { passive: true }); onScroll();
 
 // Openingstijden live uit de database (zelfde als in het beheer)
 db.from("opening_hours").select("*").order("weekday").then(({ data }) => {
