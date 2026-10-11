@@ -146,7 +146,7 @@ document.getElementById("out").onclick = async () => { await db.auth.signOut(); 
 
 function loginView(err){
   app.innerHTML = `<div class="booking" style="max-width:440px;background:var(--panel)"><div class="pane"><h3>Inloggen</h3><p class="sub">Beheer je agenda, klanten en omzet.</p>
-    <form id="lf"><label>E-mail<input name="email" type="email" required autocomplete="username"></label>
+    <form id="lf"><label>E-mail<input name="email" type="email" required autocomplete="username" value="nails.byfran@outlook.com"></label>
     <label>Wachtwoord<input name="password" type="password" required autocomplete="current-password"></label>
     <button class="btn" style="width:100%">Inloggen</button><div id="m">${err?`<p class="msg err">${esc(err)}</p>`:""}</div></form></div></div>`;
   $("#lf").onsubmit = async e => {
