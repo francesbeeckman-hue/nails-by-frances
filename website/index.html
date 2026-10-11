@@ -89,7 +89,7 @@
 
 <section id="info"><div class="wrap">
   <div class="info">
-    <div><span class="eyebrow">Openingstijden</span><h3>Ma – vr</h3><p>09:00 – 17:00<br>Weekend gesloten</p></div>
+    <div><span class="eyebrow">Openingstijden</span><h3 id="oh-title">Ma – vr</h3><p id="oh-lines">09:00 – 17:00<br>Weekend gesloten</p></div>
     <div><span class="eyebrow">Locatie</span><h3>Egmond aan den Hoef</h3><p>Magdalena van Weerdenburglaan 36<br>1934 GL Egmond aan den Hoef</p><p style="margin-top:14px"><a class="btn small ghost" href="https://www.google.com/maps/search/?api=1&query=Magdalena+van+Weerdenburglaan+36+1934GL+Egmond+aan+den+Hoef" target="_blank" rel="noopener">Route plannen</a></p></div>
     <div><span class="eyebrow">Contact</span><h3>Vragen?</h3><p><a href="https://wa.me/31648886908" target="_blank" rel="noopener">WhatsApp: 06 48 88 69 08</a><br><a href="mailto:nails.byfran@outlook.com">nails.byfran@outlook.com</a><br><a href="https://instagram.com/nailbarbyfran" target="_blank" rel="noopener">@nailbarbyfran</a></p></div>
   </div>
@@ -266,6 +266,25 @@ function stepDone(){
 }
 
 loadServices();
+
+// Openingstijden live uit de database (zelfde als in het beheer)
+db.from("opening_hours").select("*").order("weekday").then(({ data }) => {
+  if (!data || !data.length) return;
+  const D = ["", "ma", "di", "wo", "do", "vr", "za", "zo"], t = x => x.slice(0, 5);
+  const groups = [];
+  data.forEach(h => {
+    const key = h.is_open ? t(h.open_time) + " – " + t(h.close_time) : "gesloten";
+    const g = groups[groups.length - 1];
+    if (g && g.key === key && g.to === h.weekday - 1) g.to = h.weekday; else groups.push({ key, from: h.weekday, to: h.weekday });
+  });
+  const days = g => g.from === g.to ? D[g.from] : D[g.from] + " – " + D[g.to];
+  const cap = x => x.charAt(0).toUpperCase() + x.slice(1);
+  const open = groups.filter(g => g.key !== "gesloten");
+  if (!open.length) { $("#oh-title").textContent = "Tijdelijk gesloten"; $("#oh-lines").textContent = "Neem contact op via WhatsApp"; return; }
+  const main = open.reduce((a, g) => (g.to - g.from) > (a.to - a.from) ? g : a, open[0]);
+  $("#oh-title").textContent = cap(days(main));
+  $("#oh-lines").innerHTML = groups.map(g => g === main ? esc(g.key) : (g.key === "gesloten" && g.from === 6 && g.to === 7) ? "Weekend gesloten" : `${esc(cap(days(g)))}: ${esc(g.key)}`).join("<br>");
+});
 
 // Instagram (via eigen /api/instagram, 6 uur gecachet)
 fetch("/api/instagram").then(r => r.ok ? r.json() : { posts: [] }).then(d => {
