@@ -197,3 +197,6 @@ footer a{color:inherit}
 .gallery figcaption{position:absolute;left:12px;bottom:12px;background:rgba(255,255,255,.88);backdrop-filter:blur(6px);color:var(--ink-d);font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:500;padding:7px 12px;border-radius:999px}
 .gallery .ig-tile{margin-top:0}
 @media(max-width:760px){.gallery{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px}.gallery figcaption{font-size:9.5px;padding:5px 9px;left:8px;bottom:8px}}
+.ig-tile{min-width:0}
+.ig-tile b{overflow-wrap:anywhere}
+@media(max-width:760px){.ig-tile{padding:16px;padding-bottom:18px}.ig-tile b{font-size:14px}.ig-tile span:last-child{font-size:12px}.wa-float{width:50px;height:50px;right:14px;bottom:14px}}
