@@ -1,6 +1,6 @@
 window.NBF = {
-  url: "https://ewlpbnrlesizmrokzjnq.supabase.co",
-  key: "sb_publishable_X0HJsQtvxneIBzf4npMS6Q_LY3qa8BC",
+  url: "https://bfzuycyluaiepsgiainq.supabase.co",
+  key: "sb_publishable_LxwGn6uPu-6mSiTjEfH4AA_-xCdkrqd",
   tz: "Europe/Amsterdam"
 };
 window.db = window.supabase.createClient(NBF.url, NBF.key);
