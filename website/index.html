@@ -56,7 +56,7 @@
     <figure><picture><source srcset="/img/werk-3.webp" type="image/webp"><img src="/img/werk-3.jpg" alt="Bordeaux met tortoise nail art en French-rand" loading="lazy"></picture><figcaption>Tortoise & bordeaux</figcaption></figure>
     <figure><picture><source srcset="/img/werk-4.webp" type="image/webp"><img src="/img/werk-4.jpg" alt="Natuurlijke BIAB in zacht roze" loading="lazy"></picture><figcaption>BIAB Naturel</figcaption></figure>
     <figure><picture><source srcset="/img/werk-5.webp" type="image/webp"><img src="/img/werk-5.jpg" alt="Glanzende gellak in diep chocoladebruin" loading="lazy"></picture><figcaption>Chocolate gel</figcaption></figure>
-    <a class="ig-tile" href="https://instagram.com/nailbarbyfran" target="_blank" rel="noopener"><span class="eyebrow">Instagram</span><b>@nailbarbyfran</b><span>Bekijk meer werk →</span></a>
+    <a class="ig-tile" id="igtile" href="https://instagram.com/nailbarbyfran" target="_blank" rel="noopener"><div class="ig-mosaic" id="igmosaic"><img src="/img/handen-1.jpg" alt=""><img src="/img/handen-2.jpg" alt=""><img src="/img/handen-3.jpg" alt=""><img src="/img/werk-4.jpg" alt=""></div><div class="ig-cap"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M12 2.2c3.2 0 3.6 0 4.8.1 3.3.1 4.8 1.7 4.9 4.9.1 1.3.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 3.2-1.7 4.8-4.9 4.9-1.3.1-1.6.1-4.8.1s-3.6 0-4.8-.1c-3.3-.1-4.8-1.7-4.9-4.9C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.8C2.4 3.9 3.9 2.4 7.2 2.3 8.4 2.2 8.8 2.2 12 2.2zm0 4.6a5.2 5.2 0 1 0 0 10.4 5.2 5.2 0 0 0 0-10.4zm0 8.6a3.4 3.4 0 1 1 0-6.8 3.4 3.4 0 0 1 0 6.8zm5.4-9.9a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4z"/></svg><b>@nailbarbyfran</b><span>Bekijk meer werk →</span></div></a>
   </div>
 </div></section>
 
@@ -259,6 +259,7 @@ fetch("/api/instagram").then(r => r.ok ? r.json() : { posts: [] }).then(d => {
   if (posts.length < 3) return;
   $("#igrow").innerHTML = posts.map(p => `<a href="${esc(p.url)}" target="_blank" rel="noopener" class="ig-post${p.video?" vid":""}"><img src="${esc(p.img)}" alt="${esc(p.alt)}" loading="lazy" referrerpolicy="no-referrer"></a>`).join("");
   $("#instagram").hidden = false;
+  $("#igmosaic").innerHTML = posts.slice(0,4).map(p => `<img src="${esc(p.img)}" alt="" loading="lazy" referrerpolicy="no-referrer">`).join("");
 }).catch(() => {});
 </script>
 </body>
