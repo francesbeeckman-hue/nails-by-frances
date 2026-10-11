@@ -187,3 +187,13 @@ footer a{color:inherit}
 .ig-tile:hover{background:var(--sand-d)}
 @media(max-width:760px){.gallery picture:nth-child(2),.ig-tile{margin-top:0}}
 @media(min-width:761px){.hero-inset{width:min(30%,210px);margin:24px 24px 0 0}.hero-copy h1{font-size:clamp(32px,3.9vw,54px)}.hero-copy{padding-top:24px}}
+
+/* portfolio met echt werk */
+.gallery{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:14px}
+.gallery figure{position:relative;margin:0;border-radius:var(--r);overflow:hidden;aspect-ratio:4/5;background:var(--panel)}
+.gallery figure picture{display:block;width:100%;height:100%;aspect-ratio:auto;border-radius:0;margin:0!important}
+.gallery figure img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s}
+.gallery figure:hover img{transform:scale(1.04)}
+.gallery figcaption{position:absolute;left:12px;bottom:12px;background:rgba(255,255,255,.88);backdrop-filter:blur(6px);color:var(--ink-d);font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:500;padding:7px 12px;border-radius:999px}
+.gallery .ig-tile{margin-top:0}
+@media(max-width:760px){.gallery{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px}.gallery figcaption{font-size:9.5px;padding:5px 9px;left:8px;bottom:8px}}
