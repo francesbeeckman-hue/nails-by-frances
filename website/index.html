@@ -313,15 +313,6 @@ db.from("opening_hours").select("*").order("weekday").then(({ data }) => {
   if (closed) lines.push(closed.join() === "6,7" ? "Weekend gesloten" : `${esc(cap(fmtDays(closed)))}: gesloten`);
   $("#oh-lines").innerHTML = lines.join("<br>");
 });
-  });
-  const days = g => g.from === g.to ? D[g.from] : D[g.from] + " – " + D[g.to];
-  const cap = x => x.charAt(0).toUpperCase() + x.slice(1);
-  const open = groups.filter(g => g.key !== "gesloten");
-  if (!open.length) { $("#oh-title").textContent = "Tijdelijk gesloten"; $("#oh-lines").textContent = "Neem contact op via WhatsApp"; return; }
-  const main = open.reduce((a, g) => (g.to - g.from) > (a.to - a.from) ? g : a, open[0]);
-  $("#oh-title").textContent = cap(days(main));
-  $("#oh-lines").innerHTML = groups.map(g => g === main ? esc(g.key) : (g.key === "gesloten" && g.from === 6 && g.to === 7) ? "Weekend gesloten" : `${esc(cap(days(g)))}: ${esc(g.key)}`).join("<br>");
-});
 
 // Instagram (via eigen /api/instagram, 6 uur gecachet)
 fetch("/api/instagram").then(r => r.ok ? r.json() : { posts: [] }).then(d => {
