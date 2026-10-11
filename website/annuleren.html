@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Afspraak annuleren — Nails by Frances</title>
+<meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="announce">Nails by Frances</div>
+<header class="nav"><div class="wrap"><a class="logo" href="/">Nails <em>by</em> Frances</a><nav class="links"><div class="r"><a class="btn small ghost" href="/#boeken">Afspraak maken</a></div></nav></div></header>
+<section class="alt"><div class="panel-wrap"><div class="wrap"><div class="booking" style="max-width:560px"><div class="pane" id="pane"><span class="spinner"></span></div></div></div></div></section>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="/config.js"></script>
+<script>
+const pane = document.getElementById("pane"), esc = NBF.esc;
+const t = new URLSearchParams(location.search).get("t");
+const ok = /^[0-9a-f-]{36}$/i.test(t || "");
+async function load(){
+  if (!ok) { pane.innerHTML = `<h3>Link niet geldig</h3><p class="sub">Controleer of je de volledige annuleerlink hebt gebruikt.</p>`; return; }
+  const { data: b, error } = await db.rpc("get_booking", { p_token: t });
+  if (error || !b) { pane.innerHTML = `<h3>Afspraak niet gevonden</h3><p class="sub">Controleer je link of neem contact op met Frances.</p>`; return; }
+  const when = `<span class="cap" style="display:inline-block">${NBF.dateLong(b.starts_at)}</span> · ${NBF.time(b.starts_at)}`;
+  if (b.status === "cancelled") { pane.innerHTML = `<h3>Al geannuleerd</h3><p class="sub">${esc(b.service_name)} op ${when} is geannuleerd.</p><a class="btn" href="/#boeken">Nieuwe afspraak maken</a>`; return; }
+  pane.innerHTML = `<h3>Afspraak annuleren</h3><p class="sub">Hoi ${esc(b.customer_name.split(" ")[0])}, dit is je afspraak:</p>
+    <div class="summary"><div><div class="n">${esc(b.service_name)}</div><div class="muted">${when}</div></div></div>
+    ${b.can_cancel ? `<button class="btn" id="c">Ja, annuleer mijn afspraak</button><div id="m"></div>`
+      : `<p class="msg err">Online annuleren kan tot 24 uur van tevoren. Neem voor deze afspraak direct contact op met Frances.</p>`}`;
+  const c = document.getElementById("c");
+  if (c) c.onclick = async () => {
+    c.disabled = true; c.innerHTML = `<span class="spinner"></span>`;
+    const { error } = await db.rpc("cancel_booking", { p_token: t });
+    if (error) { c.disabled = false; c.textContent = "Ja, annuleer mijn afspraak"; document.getElementById("m").innerHTML = `<p class="msg err">${esc(NBF.errMsg(error))}</p>`; return; }
+    pane.innerHTML = `<div class="done"><div class="check">✓</div><h3>Geannuleerd</h3><p class="sub">Je afspraak is geannuleerd. Jammer dat het niet uitkomt — tot een volgende keer!</p><a class="btn" href="/#boeken">Nieuwe afspraak maken</a></div>`;
+  };
+}
+load();
+</script>
+</body>
+</html>

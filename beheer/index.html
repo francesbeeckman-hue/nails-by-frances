@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Beheer — Nails by Frances</title>
+<meta name="robots" content="noindex,nofollow">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<style>
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:28px;overflow-x:auto}
+.tabs button{all:unset;cursor:pointer;padding:14px 18px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.tabs button.on{color:var(--ink-d);box-shadow:inset 0 -2px 0 var(--sand-d)}
+.card{background:var(--panel);border-radius:var(--r);padding:28px;margin-bottom:14px}
+.card h3{font-size:26px;margin-bottom:14px}
+.day{margin-bottom:26px}
+.day h4::first-letter{text-transform:uppercase}
+.day h4{font-size:17px;border-bottom:1px solid var(--line);padding-bottom:6px;margin-bottom:6px}
+.appt{display:grid;grid-template-columns:110px 1fr auto;gap:14px;padding:12px 0;border-bottom:1px dashed var(--line);align-items:start}
+.appt .tm{font-family:var(--display);font-stretch:125%;font-weight:500;font-size:16px;color:var(--ink-d)}
+.appt .who{font-weight:400}
+.appt small{color:var(--muted);display:block}
+.appt.x{opacity:.45}.appt.x .who{text-decoration:line-through}
+.appt.blk{background:var(--sand);border-radius:12px;padding-left:12px;padding-right:12px;border-bottom:0;margin:4px 0}
+@media(max-width:600px){.appt{grid-template-columns:1fr}}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:700px){.grid3,.grid4{grid-template-columns:1fr 1fr}}
+.hrow{display:grid;grid-template-columns:120px 90px 1fr 1fr;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.hrow input[type=time]{margin:0}
+.chk{display:flex;align-items:center;gap:8px;font-size:14px;text-transform:none;letter-spacing:0;color:var(--ink);margin:0}
+.chk input{width:auto;margin:0}
+.srow{display:grid;grid-template-columns:2fr 1fr 1fr 80px auto;gap:10px;align-items:end;padding:10px 0;border-bottom:1px solid var(--line)}
+.srow label{margin:0}
+@media(max-width:700px){.srow{grid-template-columns:1fr 1fr}}
+.stat{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px}.stat div{background:var(--sand);border-radius:var(--r);padding:20px 26px;min-width:170px}
+.stat div b{font-family:var(--display);font-stretch:125%;font-weight:500;font-size:30px;color:var(--ink-d);display:block;line-height:1}
+.stat div span{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.danger{border-color:var(--err)!important;color:var(--err)!important;background:transparent!important}
+.danger:hover{background:var(--err)!important;color:#fff!important}
+</style>
+</head>
+<body>
+<div class="announce">Beheer · Nails by Frances</div>
+<header class="nav"><div class="wrap"><a class="logo" href="/">Nails <em>by</em> Frances</a><nav class="links"><div class="r"><button class="btn small ghost" id="out" hidden>Uitloggen</button></div></nav></div></header>
+<section style="padding-top:48px"><div class="wrap" id="app"><span class="spinner"></span></div></section>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="/config.js"></script>
+<script>
+const app = document.getElementById("app"), esc = NBF.esc, $ = s => app.querySelector(s);
+let tab = "afspraken", services = [];
+const flash = (el, txt, cls="ok") => { el.innerHTML = `<p class="msg ${cls}">${esc(txt)}</p>`; if (cls==="ok") setTimeout(()=>{ el.innerHTML=""; }, 3000); };
+const dayKey = iso => NBF.ymd(new Date(iso));
+const dayLabel = ymd => new Intl.DateTimeFormat("nl-NL",{weekday:"long",day:"numeric",month:"long",timeZone:"UTC"}).format(new Date(ymd+"T12:00:00Z"));
+
+async function init(){
+  const { data:{ session } } = await db.auth.getSession();
+  if (!session) return loginView();
+  const { data: isAdmin } = await db.rpc("is_admin");
+  if (!isAdmin) { await db.auth.signOut(); return loginView("Dit account heeft geen beheerrechten."); }
+  document.getElementById("out").hidden = false;
+  const r = await db.from("services").select("*").order("sort"); services = r.data || [];
+  render();
+}
+document.getElementById("out").onclick = async () => { await db.auth.signOut(); location.reload(); };
+
+function loginView(err){
+  app.innerHTML = `<div class="booking" style="max-width:440px;background:var(--panel)"><div class="pane"><h3>Inloggen</h3><p class="sub">Beheer je agenda en afspraken.</p>
+    <form id="lf"><label>E-mail<input name="email" type="email" required autocomplete="username"></label>
+    <label>Wachtwoord<input name="password" type="password" required autocomplete="current-password"></label>
+    <button class="btn" style="width:100%">Inloggen</button><div id="m">${err?`<p class="msg err">${esc(err)}</p>`:""}</div></form></div></div>`;
+  $("#lf").onsubmit = async e => {
+    e.preventDefault(); const v = Object.fromEntries(new FormData(e.target));
+    const { error } = await db.auth.signInWithPassword({ email: v.email.trim(), password: v.password });
+    if (error) return flash($("#m"), "E-mail of wachtwoord klopt niet.", "err");
+    init();
+  };
+}
+
+function render(){
+  const T = { afspraken:"Afspraken", dicht:"Agenda dichtzetten", tijden:"Openingstijden", behandelingen:"Behandelingen", account:"Account" };
+  app.innerHTML = `<div class="tabs">${Object.entries(T).map(([k,v])=>`<button data-t="${k}" class="${k===tab?"on":""}">${v}</button>`).join("")}</div><div id="body"><span class="spinner"></span></div>`;
+  app.querySelectorAll(".tabs button").forEach(b => b.onclick = () => { tab = b.dataset.t; render(); });
+  ({ afspraken: viewBookings, dicht: viewBlocks, tijden: viewHours, behandelingen: viewServices, account: viewAccount })[tab]();
+}
+
+/* ---------- AFSPRAKEN ---------- */
+let showPast = false;
+async function viewBookings(){
+  const body = $("#body"), today = NBF.ymd(new Date());
+  const from = showPast ? NBF.toISO(NBF.addDays(today,-30)) : NBF.toISO(today);
+  const [{ data: bk, error }, { data: bl }] = await Promise.all([
+    db.from("bookings").select("*").gte("starts_at", from).order("starts_at").limit(500),
+    db.from("blocks").select("*").gte("ends_at", from).order("starts_at")
+  ]);
+  if (error) return flash(body, NBF.errMsg(error), "err");
+  const active = bk.filter(b => b.status==="confirmed" && b.starts_at >= new Date().toISOString());
+  const todayCount = active.filter(b => dayKey(b.starts_at)===today).length;
+  const weekEnd = NBF.toISO(NBF.addDays(today,7));
+  const weekRev = active.filter(b => b.starts_at < weekEnd).reduce((s,b)=>s+b.price_cents,0);
+  const groups = {};
+  bk.forEach(b => (groups[dayKey(b.starts_at)] ||= []).push({ type:"b", ...b }));
+  (bl||[]).forEach(k => { let d = dayKey(k.starts_at); const end = dayKey(new Date(new Date(k.ends_at)-1)); while (d <= end) { (groups[d] ||= []).push({ type:"k", ...k }); d = NBF.addDays(d,1); } });
+  const days = Object.keys(groups).sort();
+  body.innerHTML = `
+    <div class="stat"><div><b>${todayCount}</b><span>Vandaag</span></div><div><b>${active.filter(b=>b.starts_at<weekEnd).length}</b><span>Komende 7 dagen</span></div><div><b>${NBF.euro(weekRev)}</b><span>Omzet 7 dagen</span></div></div>
+    <div class="card"><h3>Afspraak toevoegen</h3><p class="muted" style="margin-bottom:14px;font-size:14px">Voor afspraken die via telefoon of WhatsApp binnenkomen.</p>
+      <form id="af"><div class="grid4">
+        <label>Behandeling<select name="svc">${services.filter(s=>s.active).map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join("")}</select></label>
+        <label>Datum<input type="date" name="d" required min="${today}"></label>
+        <label>Tijd<input type="time" name="t" required step="300"></label>
+        <label>Naam<input name="name" required minlength="2"></label>
+        <label>Telefoon<input name="phone" required minlength="6"></label>
+        <label>E-mail (optioneel)<input name="email" type="email"></label>
+      </div><button class="btn small">Toevoegen</button><div id="am"></div></form></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin:28px 0 14px"><h3 style="font-size:30px">Overzicht</h3>
+      <label class="chk"><input type="checkbox" id="past" ${showPast?"checked":""}> Ook afgelopen 30 dagen</label></div>
+    ${days.length ? days.map(d => `<div class="day"><h4>${dayLabel(d)}${d===today?" · vandaag":""}</h4>${
+      groups[d].sort((a,b)=>a.starts_at.localeCompare(b.starts_at)).map(x => x.type==="k"
+        ? `<div class="appt blk"><div class="tm">${dayKey(x.starts_at)<d?"00:00":NBF.time(x.starts_at)}</div><div><span class="who">Geblokkeerd</span><small>${esc(x.reason||"Agenda dicht")} · tot ${dayKey(x.ends_at)===d && NBF.time(x.ends_at)!=="00:00" ? NBF.time(x.ends_at) : "einde dag"}</small></div><div></div></div>`
+        : `<div class="appt ${x.status==="cancelled"?"x":""}"><div class="tm">${NBF.time(x.starts_at)}<small>tot ${NBF.time(x.ends_at)}</small></div>
+           <div><span class="who">${esc(x.customer_name)}</span> · ${esc(x.service_name)} · ${NBF.euro(x.price_cents)}
+           <small><a href="tel:${esc(x.customer_phone)}">${esc(x.customer_phone)}</a>${x.customer_email.endsWith("@nailsbyfrances.nl")?"":` · <a href="mailto:${esc(x.customer_email)}">${esc(x.customer_email)}</a>`}${x.source==="admin"?" · zelf ingepland":""}</small>
+           ${x.note?`<small>“${esc(x.note)}”</small>`:""}${x.status==="cancelled"?"<small>Geannuleerd</small>":""}</div>
+           <div>${x.status==="confirmed"&&x.starts_at>new Date().toISOString()?`<button class="btn small ghost danger" data-c="${x.id}">Annuleren</button>`:""}</div></div>`).join("")}</div>`).join("")
+      : `<p class="muted">Nog geen afspraken gepland.</p>`}`;
+  $("#past").onchange = e => { showPast = e.target.checked; viewBookings(); };
+  body.querySelectorAll("[data-c]").forEach(b => b.onclick = async () => {
+    if (!confirm("Deze afspraak annuleren? Laat de klant het even weten.")) return;
+    const { error } = await db.from("bookings").update({ status:"cancelled", cancelled_at:new Date().toISOString() }).eq("id", b.dataset.c);
+    if (error) alert(NBF.errMsg(error)); else viewBookings();
+  });
+  $("#af").onsubmit = async e => {
+    e.preventDefault(); const v = Object.fromEntries(new FormData(e.target)); const s = services.find(x=>x.id===v.svc);
+    const start = NBF.toISO(v.d, v.t), end = new Date(new Date(start).getTime() + s.duration_min*60000).toISOString();
+    const { error } = await db.from("bookings").insert({ service_id:s.id, service_name:s.name, price_cents:s.price_cents, duration_min:s.duration_min,
+      starts_at:start, ends_at:end, customer_name:v.name.trim(), customer_phone:v.phone.trim(),
+      customer_email:(v.email||"").trim().toLowerCase() || "geen-email@nailsbyfrances.nl", source:"admin" });
+    if (error) return flash($("#am"), /no_overlap|exclusion/.test(error.message) ? "Er staat op dat moment al een afspraak." : NBF.errMsg(error), "err");
+    viewBookings();
+  };
+}
+
+/* ---------- AGENDA DICHTZETTEN ---------- */
+function blockRange(k){
+  const sd = dayKey(k.starts_at), ed = dayKey(new Date(new Date(k.ends_at)-1)), whole = NBF.time(k.starts_at)==="00:00" && NBF.time(k.ends_at)==="00:00";
+  if (whole) return sd===ed ? `${dayLabel(sd)} · hele dag` : `${dayLabel(sd)} t/m ${dayLabel(ed)} · hele dagen`;
+  return `${dayLabel(sd)} · ${NBF.time(k.starts_at)} – ${NBF.time(k.ends_at)}`;
+}
+async function viewBlocks(){
+  const body = $("#body"), today = NBF.ymd(new Date());
+  const { data, error } = await db.from("blocks").select("*").gte("ends_at", new Date().toISOString()).order("starts_at");
+  if (error) return flash(body, NBF.errMsg(error), "err");
+  body.innerHTML = `<div class="card"><h3>Agenda dichtzetten</h3>
+    <p class="muted" style="margin-bottom:16px;font-size:14px">Voor vakantie, een vrije dag of een paar uur tussendoor. Klanten kunnen in die periode niet boeken. Bestaande afspraken blijven gewoon staan.</p>
+    <form id="bf">
+      <label class="chk" style="margin-bottom:14px"><input type="checkbox" name="whole" id="whole" checked> Hele dag(en)</label>
+      <div class="grid4">
+        <label>Van datum<input type="date" name="d1" required min="${today}" value="${today}"></label>
+        <label>Tot en met datum<input type="date" name="d2" required min="${today}" value="${today}"></label>
+        <label class="tm">Van tijd<input type="time" name="t1" value="09:00" step="900"></label>
+        <label class="tm">Tot tijd<input type="time" name="t2" value="12:00" step="900"></label>
+      </div>
+      <label>Reden (alleen voor jou zichtbaar)<input name="reason" maxlength="100" placeholder="Bijv. vakantie, tandarts, cursus"></label>
+      <button class="btn small">Dichtzetten</button><div id="bm"></div></form></div>
+    <div class="card"><h3>Gepland dicht</h3>${data.length ? data.map(k=>`<div class="appt"><div class="tm">${new Intl.DateTimeFormat("nl-NL",{timeZone:NBF.tz,day:"numeric",month:"short"}).format(new Date(k.starts_at))}</div>
+      <div><span class="who">${esc(k.reason||"Agenda dicht")}</span><small>${blockRange(k)}</small></div>
+      <div><button class="btn small ghost" data-del="${k.id}">Weer openen</button></div></div>`).join("") : `<p class="muted">Er staat niets dicht.</p>`}</div>`;
+  const sync = () => body.querySelectorAll("label.tm").forEach(l => l.style.display = $("#whole").checked ? "none" : "");
+  $("#whole").onchange = sync; sync();
+  body.querySelectorAll("[data-del]").forEach(b => b.onclick = async () => { await db.from("blocks").delete().eq("id", b.dataset.del); viewBlocks(); });
+  $("#bf").onsubmit = async e => {
+    e.preventDefault(); const v = Object.fromEntries(new FormData(e.target)), whole = !!v.whole;
+    if (v.d2 < v.d1) return flash($("#bm"), "De einddatum ligt voor de begindatum.", "err");
+    let rows = [];
+    if (whole) rows.push({ starts_at: NBF.toISO(v.d1,"00:00"), ends_at: NBF.toISO(NBF.addDays(v.d2,1),"00:00"), reason: v.reason||null });
+    else {
+      if (v.t2 <= v.t1) return flash($("#bm"), "De eindtijd moet na de begintijd liggen.", "err");
+      for (let d=v.d1; d<=v.d2; d=NBF.addDays(d,1)) rows.push({ starts_at: NBF.toISO(d,v.t1), ends_at: NBF.toISO(d,v.t2), reason: v.reason||null });
+    }
+    const { error } = await db.from("blocks").insert(rows);
+    if (error) return flash($("#bm"), NBF.errMsg(error), "err");
+    const { count } = await db.from("bookings").select("id",{count:"exact",head:true}).eq("status","confirmed").lt("starts_at", rows.at(-1).ends_at).gt("ends_at", rows[0].starts_at);
+    viewBlocks();
+    if (count) setTimeout(()=>alert(`Let op: er staan in deze periode al ${count} afspraak/afspraken. Die blijven staan — annuleer ze zo nodig bij 'Afspraken'.`), 200);
+  };
+}
+
+/* ---------- OPENINGSTIJDEN ---------- */
+async function viewHours(){
+  const body = $("#body"); const names = ["","Maandag","Dinsdag","Woensdag","Donderdag","Vrijdag","Zaterdag","Zondag"];
+  const { data, error } = await db.from("opening_hours").select("*").order("weekday");
+  if (error) return flash(body, NBF.errMsg(error), "err");
+  body.innerHTML = `<div class="card"><h3>Vaste openingstijden</h3><p class="muted" style="margin-bottom:16px;font-size:14px">Dit is je standaardweek. Voor losse dagen gebruik je 'Agenda dichtzetten'.</p>
+    ${data.map(h=>`<div class="hrow" data-w="${h.weekday}"><b style="font-weight:400">${names[h.weekday]}</b>
+      <label class="chk"><input type="checkbox" ${h.is_open?"checked":""}> Open</label>
+      <input type="time" value="${h.open_time.slice(0,5)}" step="900"><input type="time" value="${h.close_time.slice(0,5)}" step="900"></div>`).join("")}
+    <div style="margin-top:18px"><button class="btn small" id="sv">Opslaan</button></div><div id="hm"></div></div>`;
+  $("#sv").onclick = async () => {
+    const rows = [...body.querySelectorAll(".hrow")].map(r => { const i = r.querySelectorAll("input"); return { weekday:+r.dataset.w, is_open:i[0].checked, open_time:i[1].value, close_time:i[2].value }; });
+    if (rows.some(r => r.close_time <= r.open_time)) return flash($("#hm"), "Sluitingstijd moet na openingstijd liggen.", "err");
+    const { error } = await db.from("opening_hours").upsert(rows);
+    error ? flash($("#hm"), NBF.errMsg(error), "err") : flash($("#hm"), "Opgeslagen ✓");
+  };
+}
+
+/* ---------- BEHANDELINGEN ---------- */
+async function viewServices(){
+  const body = $("#body");
+  const { data, error } = await db.from("services").select("*").order("sort"); if (error) return flash(body, NBF.errMsg(error), "err");
+  services = data;
+  const row = s => `<div class="srow" data-id="${s?.id||""}">
+    <label>Naam<input name="name" value="${esc(s?.name||"")}" placeholder="Nieuwe behandeling"></label>
+    <label>Prijs (€)<input name="price" type="number" min="0" step="0.5" value="${s?(s.price_cents/100):""}"></label>
+    <label>Duur (min)<input name="dur" type="number" min="5" step="5" value="${s?.duration_min||""}"></label>
+    <label class="chk"><input name="active" type="checkbox" ${!s||s.active?"checked":""}> Online</label>
+    <button class="btn small" data-save>${s?"Opslaan":"Toevoegen"}</button></div>`;
+  body.innerHTML = `<div class="card"><h3>Behandelingen & prijzen</h3><p class="muted" style="margin-bottom:10px;font-size:14px">Haal het vinkje 'Online' weg om een behandeling te verbergen. De duur bepaalt welke tijden klanten zien.</p>
+    ${data.map(row).join("")}<div style="margin-top:22px"></div>${row(null)}<div id="sm"></div></div>`;
+  body.querySelectorAll("[data-save]").forEach(b => b.onclick = async () => {
+    const r = b.closest(".srow"), g = n => r.querySelector(`[name=${n}]`);
+    const rec = { name:g("name").value.trim(), price_cents:Math.round(parseFloat(g("price").value||"0")*100), duration_min:parseInt(g("dur").value||"0"), active:g("active").checked };
+    if (rec.name.length < 2 || !(rec.duration_min >= 5)) return flash($("#sm"), "Vul een naam en duur (min. 5 minuten) in.", "err");
+    const q = r.dataset.id ? db.from("services").update(rec).eq("id", r.dataset.id) : db.from("services").insert({ ...rec, sort: data.length+1 });
+    const { error } = await q; if (error) return flash($("#sm"), NBF.errMsg(error), "err");
+    r.dataset.id ? flash($("#sm"), "Opgeslagen ✓") : viewServices();
+  });
+}
+
+/* ---------- ACCOUNT ---------- */
+function viewAccount(){
+  const body = $("#body");
+  body.innerHTML = `<div class="card" style="max-width:480px"><h3>Wachtwoord wijzigen</h3>
+    <form id="pf"><label>Nieuw wachtwoord<input type="password" name="p1" minlength="8" required autocomplete="new-password"></label>
+    <label>Herhaal<input type="password" name="p2" minlength="8" required autocomplete="new-password"></label>
+    <button class="btn small">Wijzigen</button><div id="pm"></div></form></div>`;
+  $("#pf").onsubmit = async e => {
+    e.preventDefault(); const v = Object.fromEntries(new FormData(e.target));
+    if (v.p1 !== v.p2) return flash($("#pm"), "De wachtwoorden zijn niet gelijk.", "err");
+    const { error } = await db.auth.updateUser({ password: v.p1 });
+    error ? flash($("#pm"), NBF.errMsg(error), "err") : (e.target.reset(), flash($("#pm"), "Wachtwoord gewijzigd ✓"));
+  };
+}
+init();
+</script>
+</body>
+</html>
