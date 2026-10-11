@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Nail Bar by Fran — Nagelstyliste | Online afspraak maken</title>
-<meta name="description" content="Gellak, BIAB en gelnagels door Frances. Boek je afspraak eenvoudig online — kies je behandeling en een tijd die jou past.">
+<meta name="description" content="BIAB en gellak door Fran. Boek je afspraak eenvoudig online — kies je behandeling en een tijd die jou past.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css">
@@ -26,13 +26,13 @@
   <div class="hero-copy">
     <span class="eyebrow">Nagelstyliste</span>
     <h1>Verzorgde nagels, met aandacht gemaakt.</h1>
-    <p>Gellak, BIAB en gelnagels in een rustige setting. Kies je behandeling en een moment dat jou uitkomt.</p>
+    <p>BIAB en gellak in een rustige setting. Kies je behandeling en een moment dat jou uitkomt.</p>
     <div class="ctas"><a class="btn" href="#boeken">Plan je afspraak</a><a class="btn ghost" href="#behandelingen">Bekijk prijzen</a></div>
   </div>
 </div></section>
 
 <section id="behandelingen"><div class="wrap">
-  <div class="sec-head"><span class="eyebrow">Prijslijst</span><h2>Behandelingen</h2><p>Alle prijzen zijn inclusief kleur naar keuze. Je betaalt na afloop in de salon.</p></div>
+  <div class="sec-head"><span class="eyebrow">Prijslijst</span><h2>Behandelingen</h2><p>Extra's voeg je toe bij het boeken. Je betaalt na afloop in de salon.</p></div>
   <div class="menu" id="menu"><p class="muted" style="text-align:center"><span class="spinner"></span></p></div>
 </div></section>
 
@@ -64,7 +64,7 @@
 </div></section>
 </main>
 
-<footer><div class="wrap"><span>© <span id="yr"></span> Nail Bar by Fran</span><span>Gellak · BIAB · Gelnagels</span></div></footer>
+<footer><div class="wrap"><span>© <span id="yr"></span> Nail Bar by Fran</span><span>BIAB · Gellak · Nail art</span></div></footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="/config.js"></script>
@@ -72,7 +72,7 @@
 const $ = s => document.querySelector(s);
 const pane = $("#pane"), esc = NBF.esc;
 $("#yr").textContent = new Date().getFullYear();
-const S = { services: [], svc: null, month: null, avail: new Set(), date: null, slot: null, result: null };
+const S = { services: [], extras: [], svc: null, month: null, avail: new Set(), date: null, slot: null, result: null };
 
 function setStep(n){
   [...$("#steps").children].forEach((el,i)=>{ el.className = i+1===n ? "on" : (i+1<n ? "done" : ""); });
@@ -81,24 +81,44 @@ function setStep(n){
 async function loadServices(){
   const { data, error } = await db.from("services").select("*").eq("active", true).order("sort");
   if (error) { $("#menu").innerHTML = `<p class="msg err">${esc(NBF.errMsg(error))}</p>`; return; }
-  S.services = data;
-  $("#menu").innerHTML = data.map(s => `
-    <div class="menu-row"><div><div class="n">${esc(s.name)}</div><div class="d">${esc(s.description||"")}</div></div>
-    <div class="fill"></div><div class="meta"><div class="p">${NBF.euro(s.price_cents)}</div><div class="t">${NBF.dur(s.duration_min)}</div></div></div>`).join("");
+  S.services = data.filter(s => !s.is_extra); S.extraList = data.filter(s => s.is_extra);
+  const cats = [...new Set(data.map(s => s.category || "Behandelingen"))];
+  $("#menu").innerHTML = cats.map(c => `<h3 class="menu-cat">${esc(c)}</h3>` + data.filter(s => (s.category||"Behandelingen")===c).map(s => `
+    <div class="menu-row"><div><div class="n">${esc(s.name)}</div><div class="d">${esc(s.description||"")}${s.is_extra?" · toe te voegen bij je behandeling":""}</div></div>
+    <div class="fill"></div><div class="meta"><div class="p">${s.is_extra?"+ ":""}${NBF.euro(s.price_cents)}</div><div class="t">${s.is_extra?"+ ":""}${NBF.dur(s.duration_min)}</div></div></div>`).join("")).join("");
   stepService();
 }
 
 function stepService(){
   setStep(1);
+  const cats = [...new Set(S.services.map(s => s.category || "Behandelingen"))];
   pane.innerHTML = `<h3>Kies je behandeling</h3><p class="sub">Waar heb je zin in?</p>
-    <div class="svc-grid">${S.services.map(s=>`
+    ${cats.map(c => `<div class="eyebrow" style="margin:18px 0 10px">${esc(c)}</div><div class="svc-grid">${S.services.filter(s=>(s.category||"Behandelingen")===c).map(s=>`
       <button class="svc" data-id="${s.id}"><div><div class="n">${esc(s.name)}</div><div class="t">${NBF.dur(s.duration_min)}</div></div><div class="p">${NBF.euro(s.price_cents)}</div></button>`).join("")}
-    </div>`;
+    </div>`).join("")}`;
   pane.querySelectorAll(".svc").forEach(b => b.onclick = () => {
-    S.svc = S.services.find(s => s.id === b.dataset.id); S.date = null; S.slot = null;
+    S.svc = S.services.find(s => s.id === b.dataset.id); S.extras = []; S.date = null; S.slot = null;
     const today = NBF.ymd(new Date()); S.month = today.slice(0,7);
-    stepMoment();
+    (S.extraList && S.extraList.length) ? stepExtras() : stepMoment();
   });
+}
+
+const chosenExtras = () => (S.extraList||[]).filter(e => S.extras.includes(e.id));
+const totalDur = () => S.svc.duration_min + chosenExtras().reduce((a,e)=>a+e.duration_min,0);
+const totalPrice = () => S.svc.price_cents + chosenExtras().reduce((a,e)=>a+e.price_cents,0);
+const fullName = () => S.svc.name + chosenExtras().map(e => " + " + e.name).join("");
+
+function stepExtras(){
+  setStep(1);
+  pane.innerHTML = `<h3>Iets extra's?</h3><p class="sub">${esc(S.svc.name)} · ${NBF.euro(S.svc.price_cents)}. Voeg eventueel iets toe.</p>
+    <div class="extras">${S.extraList.map(e => `<label class="extra"><input type="checkbox" value="${e.id}" ${S.extras.includes(e.id)?"checked":""}>
+      <span class="n">${esc(e.name)}</span><span class="t">+ ${NBF.dur(e.duration_min)}</span><span class="p">+ ${NBF.euro(e.price_cents)}</span></label>`).join("")}</div>
+    <div class="summary" style="margin-top:18px"><div class="muted" id="xt"></div></div>
+    <div class="actions"><button class="link" id="back">← Andere behandeling</button><button class="btn" id="go">Verder</button></div>`;
+  const upd = () => { $("#xt").innerHTML = `Totaal: <b>${NBF.euro(totalPrice())}</b> · ${NBF.dur(totalDur())}`; };
+  pane.querySelectorAll(".extra input").forEach(i => i.onchange = () => { S.extras = [...pane.querySelectorAll(".extra input:checked")].map(x=>x.value); S.date = null; S.slot = null; upd(); });
+  upd();
+  $("#back").onclick = stepService; $("#go").onclick = stepMoment;
 }
 
 async function stepMoment(){
@@ -107,20 +127,20 @@ async function stepMoment(){
   const [y,m] = S.month.split("-").map(Number);
   const first = `${S.month}-01`, last = new Date(Date.UTC(y, m, 0)).toISOString().slice(0,10);
   const label = new Intl.DateTimeFormat("nl-NL",{month:"long",year:"numeric",timeZone:"UTC"}).format(new Date(Date.UTC(y,m-1,1)));
-  pane.innerHTML = `<h3>Kies een moment</h3><p class="sub">${esc(S.svc.name)} · ${NBF.dur(S.svc.duration_min)}</p>
+  pane.innerHTML = `<h3>Kies een moment</h3><p class="sub">${esc(fullName())} · ${NBF.dur(totalDur())}</p>
     <div class="cal-wrap"><div>
       <div class="cal-head"><button id="prev" aria-label="Vorige maand">‹</button><b>${label}</b><button id="next" aria-label="Volgende maand">›</button></div>
       <div class="cal" id="cal"><div style="grid-column:1/-1;padding:40px"><span class="spinner"></span></div></div>
     </div><div><div class="eyebrow" style="margin-bottom:12px" id="slotlbl">Beschikbare tijden</div><div id="slots" class="muted">Kies eerst een dag in de kalender.</div></div></div>
-    <div class="actions"><button class="link" id="back">← Andere behandeling</button><button class="btn" id="go" disabled>Verder</button></div>`;
-  $("#back").onclick = stepService;
+    <div class="actions"><button class="link" id="back">← Terug</button><button class="btn" id="go" disabled>Verder</button></div>`;
+  $("#back").onclick = () => (S.extraList && S.extraList.length) ? stepExtras() : stepService();
   $("#prev").disabled = S.month <= today.slice(0,7);
   $("#next").disabled = S.month >= maxDay.slice(0,7);
   $("#prev").onclick = () => { S.month = NBF.addDays(first,-1).slice(0,7); stepMoment(); };
   $("#next").onclick = () => { S.month = NBF.addDays(last,1).slice(0,7); stepMoment(); };
   $("#go").onclick = stepDetails;
   const from = first < today ? today : first;
-  const { data, error } = await db.rpc("get_available_dates", { p_service_id: S.svc.id, p_from: from, p_to: last });
+  const { data, error } = await db.rpc("get_available_dates", { p_service_id: S.svc.id, p_from: from, p_to: last, p_extras: S.extras });
   if (error) { $("#cal").innerHTML = `<p class="msg err" style="grid-column:1/-1">${esc(NBF.errMsg(error))}</p>`; return; }
   S.avail = new Set((data||[]).map(r => r.available_date));
   const startDow = (new Date(Date.UTC(y,m-1,1)).getUTCDay()+6)%7;
@@ -145,7 +165,7 @@ async function loadSlots(){
   const box = $("#slots");
   box.innerHTML = `<span class="spinner"></span>`;
   $("#slotlbl").textContent = new Intl.DateTimeFormat("nl-NL",{weekday:"long",day:"numeric",month:"long",timeZone:"UTC"}).format(new Date(S.date+"T12:00:00Z"));
-  const { data, error } = await db.rpc("get_slots", { p_service_id: S.svc.id, p_date: S.date });
+  const { data, error } = await db.rpc("get_slots", { p_service_id: S.svc.id, p_date: S.date, p_extras: S.extras });
   if (error) { box.innerHTML = `<p class="msg err">${esc(NBF.errMsg(error))}</p>`; return; }
   if (!data.length) { box.innerHTML = "Deze dag is inmiddels vol."; return; }
   box.className = "slots";
@@ -159,8 +179,8 @@ function stepDetails(){
   setStep(3);
   const saved = (()=>{ try { return JSON.parse(localStorage.getItem("nbf_klant")||"{}"); } catch { return {}; } })();
   pane.innerHTML = `<h3>Jouw gegevens</h3><p class="sub">Bijna klaar.</p>
-    <div class="summary"><div><div class="n">${esc(S.svc.name)}</div><div class="muted cap">${NBF.dateLong(S.slot)} · ${NBF.time(S.slot)}</div></div>
-      <div style="text-align:right"><div class="n">${NBF.euro(S.svc.price_cents)}</div><div class="muted">${NBF.dur(S.svc.duration_min)}</div></div></div>
+    <div class="summary"><div><div class="n">${esc(fullName())}</div><div class="muted cap">${NBF.dateLong(S.slot)} · ${NBF.time(S.slot)}</div></div>
+      <div style="text-align:right"><div class="n">${NBF.euro(totalPrice())}</div><div class="muted">${NBF.dur(totalDur())}</div></div></div>
     <form id="f" novalidate>
       <div class="row"><label>Naam<input name="name" required minlength="2" maxlength="100" autocomplete="name" value="${esc(saved.name||"")}"></label>
       <label>Telefoon<input name="phone" required type="tel" minlength="6" maxlength="30" autocomplete="tel" value="${esc(saved.phone||"")}"></label></div>
@@ -175,7 +195,7 @@ function stepDetails(){
     const f = e.target, v = Object.fromEntries(new FormData(f));
     if (!f.checkValidity()) { $("#m").innerHTML = `<p class="msg err">Vul je naam, telefoonnummer en een geldig e-mailadres in.</p>`; return; }
     const btn = $("#sub"); btn.disabled = true; btn.innerHTML = `<span class="spinner"></span>`;
-    const { data, error } = await db.rpc("create_booking", { p_service_id: S.svc.id, p_starts_at: S.slot, p_name: v.name, p_email: v.email, p_phone: v.phone, p_note: v.note || null });
+    const { data, error } = await db.rpc("create_booking", { p_service_id: S.svc.id, p_starts_at: S.slot, p_name: v.name, p_email: v.email, p_phone: v.phone, p_note: v.note || null, p_extras: S.extras });
     if (error) {
       btn.disabled = false; btn.textContent = "Afspraak bevestigen";
       $("#m").innerHTML = `<p class="msg err">${esc(NBF.errMsg(error))}</p>`;
@@ -192,7 +212,7 @@ function ics(){
   const cancel = location.origin + "/annuleren?t=" + r.cancel_token;
   const body = ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Nail Bar by Fran//NL","BEGIN:VEVENT",
     "UID:"+r.id+"@nailbarbyfran","DTSTAMP:"+f(new Date().toISOString()),"DTSTART:"+f(r.starts_at),"DTEND:"+f(r.ends_at),
-    "SUMMARY:"+r.service_name+" – Nail Bar by Fran","DESCRIPTION:Annuleren? "+cancel,"END:VEVENT","END:VCALENDAR"].join("\r\n");
+    "SUMMARY:"+r.service_name+(r.extras?" + "+r.extras:"")+" – Nail Bar by Fran","DESCRIPTION:Annuleren? "+cancel,"END:VEVENT","END:VCALENDAR"].join("\r\n");
   const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([body],{type:"text/calendar"})); a.download = "afspraak-nail-bar-by-fran.ics"; a.click();
 }
 
@@ -201,7 +221,7 @@ function stepDone(){
   const r = S.result, cancel = location.origin + "/annuleren?t=" + r.cancel_token;
   pane.innerHTML = `<div class="done"><div class="check">✓</div><h3>Tot snel!</h3>
     <p class="sub">Je afspraak is bevestigd.</p>
-    <div class="summary" style="text-align:left"><div><div class="n">${esc(r.service_name)}</div><div class="muted cap">${NBF.dateLong(r.starts_at)} · ${NBF.time(r.starts_at)} – ${NBF.time(r.ends_at)}</div></div>
+    <div class="summary" style="text-align:left"><div><div class="n">${esc(r.service_name + (r.extras ? " + " + r.extras.split(", ").join(" + ") : ""))}</div><div class="muted cap">${NBF.dateLong(r.starts_at)} · ${NBF.time(r.starts_at)} – ${NBF.time(r.ends_at)}</div></div>
       <div style="text-align:right"><div class="n">${NBF.euro(r.price_cents)}</div><div class="muted">betalen in de salon</div></div></div>
     <div class="actions" style="justify-content:center"><button class="btn" id="cal">Zet in mijn agenda</button><button class="btn ghost" id="copy">Kopieer annuleerlink</button></div>
     <p class="muted" style="font-size:13px;margin-top:18px">Bewaar je annuleerlink: kosteloos annuleren kan tot 24 uur van tevoren.<br><a href="${cancel}">${esc(cancel)}</a></p></div>`;

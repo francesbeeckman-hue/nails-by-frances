@@ -8,51 +8,129 @@
 <link rel="stylesheet" href="/style.css">
 <link rel="icon" type="image/png" href="/favicon.png">
 <style>
-.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:28px;overflow-x:auto}
-.tabs button{all:unset;cursor:pointer;padding:14px 18px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
-.tabs button.on{color:var(--ink-d);box-shadow:inset 0 -2px 0 var(--sand-d)}
-.card{background:var(--panel);border-radius:var(--r);padding:28px;margin-bottom:14px}
-.card h3{font-size:26px;margin-bottom:14px}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:24px;overflow-x:auto;scrollbar-width:none}
+.tabs button{all:unset;cursor:pointer;padding:14px 16px;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);white-space:nowrap;font-weight:500}
+.tabs button.on{color:var(--brand);box-shadow:inset 0 -2px 0 var(--brand)}
+.card{background:var(--panel);border-radius:var(--r);padding:26px;margin-bottom:14px}
+.card h3{font-size:22px;margin-bottom:12px}
 .day{margin-bottom:26px}
 .day h4::first-letter{text-transform:uppercase}
-.day h4{font-size:17px;border-bottom:1px solid var(--line);padding-bottom:6px;margin-bottom:6px}
+.day h4{font-size:16px;border-bottom:1px solid var(--line);padding-bottom:6px;margin-bottom:6px}
 .appt{display:grid;grid-template-columns:110px 1fr auto;gap:14px;padding:12px 0;border-bottom:1px dashed var(--line);align-items:start}
-.appt .tm{font-family:var(--display);font-stretch:125%;font-weight:500;font-size:16px;color:var(--ink-d)}
-.appt .who{font-weight:400}
+.appt .tm{font-family:var(--display);font-stretch:125%;font-weight:500;font-size:15px;color:var(--ink-d)}
+.appt .who{font-weight:500;color:var(--ink-d)}
 .appt small{color:var(--muted);display:block}
 .appt.x{opacity:.45}.appt.x .who{text-decoration:line-through}
 .appt.blk{background:var(--sand);border-radius:12px;padding-left:12px;padding-right:12px;border-bottom:0;margin:4px 0}
-@media(max-width:600px){.appt{grid-template-columns:1fr}}
+.appt .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+@media(max-width:600px){.appt{grid-template-columns:1fr}.appt .acts{justify-content:flex-start}}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
 @media(max-width:700px){.grid3,.grid4{grid-template-columns:1fr 1fr}}
 .hrow{display:grid;grid-template-columns:120px 90px 1fr 1fr;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
 .hrow input[type=time]{margin:0}
-.chk{display:flex;align-items:center;gap:8px;font-size:14px;text-transform:none;letter-spacing:0;color:var(--ink);margin:0}
+@media(max-width:600px){.hrow{grid-template-columns:1fr 1fr}}
+.chk{display:flex;align-items:center;gap:8px;font-size:14px;text-transform:none;letter-spacing:0;color:var(--ink-d);margin:0;font-weight:400}
 .chk input{width:auto;margin:0}
-.srow{display:grid;grid-template-columns:2fr 1fr 1fr 80px auto;gap:10px;align-items:end;padding:10px 0;border-bottom:1px solid var(--line)}
+.srow{display:grid;grid-template-columns:1.6fr 1.3fr .8fr .8fr auto auto auto;gap:10px;align-items:end;padding:10px 0;border-bottom:1px solid var(--line)}
 .srow label{margin:0}
-@media(max-width:700px){.srow{grid-template-columns:1fr 1fr}}
-.stat{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px}.stat div{background:var(--sand);border-radius:var(--r);padding:20px 26px;min-width:170px}
-.stat div b{font-family:var(--display);font-stretch:125%;font-weight:500;font-size:30px;color:var(--ink-d);display:block;line-height:1}
-.stat div span{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+@media(max-width:900px){.srow{grid-template-columns:1fr 1fr}}
+.stat{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.stat > div{background:var(--sand);border-radius:var(--r);padding:18px 22px;min-width:150px;flex:1}
+.stat b{font-family:var(--display);font-stretch:125%;font-weight:500;font-size:26px;color:var(--ink-d);display:block;line-height:1.1}
+.stat span{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink)}
+.stat small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
 .danger{border-color:var(--err)!important;color:var(--err)!important;background:transparent!important}
 .danger:hover{background:var(--err)!important;color:#fff!important}
+.badge{display:inline-block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:999px;background:var(--sand);color:var(--ink-d);font-weight:500;margin-left:6px;vertical-align:middle}
+.badge.paid{background:#E5EEE3;color:#4C6B50}.badge.open{background:#FBEBD9;color:#8A5A1F}.badge.ns{background:#FBE7EC;color:var(--err)}
+table.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th{text-align:left;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink);font-weight:500;padding:10px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl td{padding:11px 8px;border-bottom:1px solid var(--line);color:var(--ink-d);vertical-align:top}
+.tbl td.r,.tbl th.r{text-align:right;white-space:nowrap}
+.tblwrap{overflow-x:auto}
+.toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:14px}
+.toolbar .grp{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.toolbar input,.toolbar select{margin:0;width:auto}
+.round{all:unset;cursor:pointer;width:38px;height:38px;display:grid;place-items:center;border:1px solid var(--line);border-radius:50%;background:#fff;font-size:17px;color:var(--ink-d)}
+/* week agenda */
+.wk{position:relative;display:grid;grid-template-columns:54px repeat(7,minmax(110px,1fr));background:#fff;border-radius:var(--r);overflow:hidden;min-width:860px}
+.wkwrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--line)}
+.wk .hd{position:sticky;top:0;background:#fff;z-index:2;padding:12px 8px;border-bottom:1px solid var(--line);font-size:12px;text-align:center;color:var(--ink)}
+.wk .hd b{display:block;font-family:var(--display);font-stretch:125%;font-weight:500;font-size:18px;color:var(--ink-d)}
+.wk .hd.today b{color:#fff;background:var(--brand);border-radius:50%;width:34px;height:34px;line-height:34px;margin:2px auto 0}
+.wk .col{position:relative;border-left:1px solid var(--line)}
+.wk .col.closed{background:repeating-linear-gradient(45deg,#FBF9F6,#FBF9F6 6px,#fff 6px,#fff 12px)}
+.wk .hours{position:relative}
+.wk .hl{position:absolute;left:0;right:0;border-top:1px solid #F1ECE5}
+.wk .hlab{position:absolute;right:8px;font-size:11px;color:var(--muted);transform:translateY(-50%)}
+.wk .hlab:first-child{transform:translateY(2px)}
+.wk .ev{position:absolute;left:4px;right:4px;border-radius:10px;padding:6px 8px;font-size:12px;line-height:1.3;overflow:hidden;cursor:pointer;background:var(--sand);color:var(--ink-d);border-left:3px solid var(--brand)}
+.wk .ev:hover{filter:brightness(.97)}
+.wk .ev b{font-weight:600;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wk .ev.paid{background:#E9F0E7;border-left-color:#5E7B62}
+.wk .ev.ns{background:#FBE7EC;border-left-color:var(--err)}
+.wk .ev.blk{background:repeating-linear-gradient(45deg,#EFE8DE,#EFE8DE 6px,#F7F4EF 6px,#F7F4EF 12px);border-left-color:var(--sand-d);cursor:default}
+.wk .now{position:absolute;left:0;right:0;border-top:2px solid var(--err);z-index:1}
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(40,30,20,.35);display:grid;place-items:center;z-index:50;padding:16px}
+.modal .box{background:#fff;border-radius:var(--r);max-width:480px;width:100%;padding:28px;max-height:90vh;overflow:auto}
+.modal h3{font-size:20px;margin-bottom:4px}
+.modal .row2{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.kv{display:grid;grid-template-columns:110px 1fr;gap:6px 12px;font-size:14px;margin:14px 0}
+.kv dt{color:var(--muted)}.kv dd{color:var(--ink-d)}
 </style>
 </head>
 <body>
 <div class="announce">Beheer · Nail Bar by Fran</div>
 <header class="nav"><div class="wrap"><a class="logo" href="/"><img src="/logo.png" alt="Nail Bar by Fran"></a><nav class="links"><div class="r"><button class="btn small ghost" id="out" hidden>Uitloggen</button></div></nav></div></header>
-<section style="padding-top:48px"><div class="wrap" id="app"><span class="spinner"></span></div></section>
+<section style="padding-top:36px"><div class="wrap" id="app"><span class="spinner"></span></div></section>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="/config.js"></script>
 <script>
 const app = document.getElementById("app"), esc = NBF.esc, $ = s => app.querySelector(s);
-let tab = "afspraken", services = [];
-const flash = (el, txt, cls="ok") => { el.innerHTML = `<p class="msg ${cls}">${esc(txt)}</p>`; if (cls==="ok") setTimeout(()=>{ el.innerHTML=""; }, 3000); };
+let tab = "agenda", services = [], settings = { buffer_min:15, slot_step_min:30, vat_rate:21 };
+const flash = (el, txt, cls="ok") => { if(!el) return alert(txt); el.innerHTML = `<p class="msg ${cls}">${esc(txt)}</p>`; if (cls==="ok") setTimeout(()=>{ el.innerHTML=""; }, 3000); };
 const dayKey = iso => NBF.ymd(new Date(iso));
 const dayLabel = ymd => new Intl.DateTimeFormat("nl-NL",{weekday:"long",day:"numeric",month:"long",timeZone:"UTC"}).format(new Date(ymd+"T12:00:00Z"));
+const nowISO = () => new Date().toISOString();
+const PLACEHOLDER = "@nailsbyfrances.nl";
+const isPlaceholder = e => !e || e.endsWith(PLACEHOLDER) || e.endsWith("@nailbarbyfran.nl");
+const fullSvc = b => b.service_name + (b.extras ? " + " + b.extras.split(", ").join(" + ") : "");
+const amount = b => b.paid_cents ?? b.price_cents;
+const vatOf = cents => Math.round(cents * settings.vat_rate / (100 + Number(settings.vat_rate)));
+const euro2 = c => "€" + (c/100).toFixed(2).replace(".", ",");
+function stateOf(b){
+  if (b.status === "cancelled") return "cancelled";
+  if (b.status === "no_show") return "ns";
+  if (b.payment_method) return "paid";
+  if (b.starts_at < nowISO()) return "open";
+  return "planned";
+}
+function badge(b){
+  const s = stateOf(b);
+  if (s==="paid") return `<span class="badge paid">${b.payment_method==="pin"?"Pin":"Contant"} · ${NBF.euro(amount(b))}</span>`;
+  if (s==="open") return `<span class="badge open">Nog afrekenen</span>`;
+  if (s==="ns") return `<span class="badge ns">Niet gekomen</span>`;
+  if (s==="cancelled") return `<span class="badge">Geannuleerd</span>`;
+  return "";
+}
+async function allBookings(fromISO, toISO){
+  let out = [], from = 0;
+  for(;;){
+    let q = db.from("bookings").select("*").order("starts_at").range(from, from+999);
+    if (fromISO) q = q.gte("starts_at", fromISO);
+    if (toISO) q = q.lt("starts_at", toISO);
+    const { data, error } = await q; if (error) throw error;
+    out = out.concat(data); if (data.length < 1000) break; from += 1000;
+  }
+  return out;
+}
+function csv(rows, name){
+  const s = rows.map(r => r.map(v => { v = v==null ? "" : String(v); return /[";\n]/.test(v) ? `"${v.replace(/"/g,'""')}"` : v; }).join(";")).join("\r\n");
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["﻿"+s],{type:"text/csv;charset=utf-8"})); a.download = name; a.click();
+}
 
 async function init(){
   const { data:{ session } } = await db.auth.getSession();
@@ -60,13 +138,14 @@ async function init(){
   const { data: isAdmin } = await db.rpc("is_admin");
   if (!isAdmin) { await db.auth.signOut(); return loginView("Dit account heeft geen beheerrechten."); }
   document.getElementById("out").hidden = false;
-  const r = await db.from("services").select("*").order("sort"); services = r.data || [];
+  const [r, st] = await Promise.all([db.from("services").select("*").order("sort"), db.from("settings").select("*").limit(1)]);
+  services = r.data || []; if (st.data && st.data[0]) settings = st.data[0];
   render();
 }
 document.getElementById("out").onclick = async () => { await db.auth.signOut(); location.reload(); };
 
 function loginView(err){
-  app.innerHTML = `<div class="booking" style="max-width:440px;background:var(--panel)"><div class="pane"><h3>Inloggen</h3><p class="sub">Beheer je agenda en afspraken.</p>
+  app.innerHTML = `<div class="booking" style="max-width:440px;background:var(--panel)"><div class="pane"><h3>Inloggen</h3><p class="sub">Beheer je agenda, klanten en omzet.</p>
     <form id="lf"><label>E-mail<input name="email" type="email" required autocomplete="username"></label>
     <label>Wachtwoord<input name="password" type="password" required autocomplete="current-password"></label>
     <button class="btn" style="width:100%">Inloggen</button><div id="m">${err?`<p class="msg err">${esc(err)}</p>`:""}</div></form></div></div>`;
@@ -78,68 +157,252 @@ function loginView(err){
   };
 }
 
+const TABS = { agenda:"Agenda", afspraken:"Afspraken", klanten:"Klanten", boekhouding:"Boekhouding", dicht:"Agenda dichtzetten", tijden:"Openingstijden & planning", behandelingen:"Behandelingen", account:"Account" };
 function render(){
-  const T = { afspraken:"Afspraken", dicht:"Agenda dichtzetten", tijden:"Openingstijden &amp; planning", behandelingen:"Behandelingen", account:"Account" };
-  app.innerHTML = `<div class="tabs">${Object.entries(T).map(([k,v])=>`<button data-t="${k}" class="${k===tab?"on":""}">${v}</button>`).join("")}</div><div id="body"><span class="spinner"></span></div>`;
+  app.innerHTML = `<div class="tabs">${Object.entries(TABS).map(([k,v])=>`<button data-t="${k}" class="${k===tab?"on":""}">${v}</button>`).join("")}</div><div id="body"><span class="spinner"></span></div>`;
   app.querySelectorAll(".tabs button").forEach(b => b.onclick = () => { tab = b.dataset.t; render(); });
-  ({ afspraken: viewBookings, dicht: viewBlocks, tijden: viewHours, behandelingen: viewServices, account: viewAccount })[tab]();
+  ({ agenda: viewAgenda, afspraken: viewBookings, klanten: viewCustomers, boekhouding: viewBooks, dicht: viewBlocks, tijden: viewHours, behandelingen: viewServices, account: viewAccount })[tab]()
+    .catch?.(e => flash($("#body"), NBF.errMsg(e), "err"));
+}
+const refresh = () => render();
+
+/* ---------- AFSPRAAK-DETAIL (afrekenen) ---------- */
+function openBooking(b){
+  const m = document.createElement("div"); m.className = "modal";
+  const s = stateOf(b), past = b.starts_at < nowISO();
+  m.innerHTML = `<div class="box"><h3>${esc(b.customer_name)}</h3><div>${badge(b)}</div>
+    <dl class="kv"><dt>Behandeling</dt><dd>${esc(fullSvc(b))}</dd>
+    <dt>Wanneer</dt><dd><span class="cap" style="display:inline-block">${NBF.dateLong(b.starts_at)}</span>, ${NBF.time(b.starts_at)}–${NBF.time(b.ends_at)}</dd>
+    <dt>Prijs</dt><dd>${NBF.euro(b.price_cents)}</dd>
+    <dt>Telefoon</dt><dd><a href="tel:${esc(b.customer_phone)}">${esc(b.customer_phone)}</a></dd>
+    ${isPlaceholder(b.customer_email)?"":`<dt>E-mail</dt><dd><a href="mailto:${esc(b.customer_email)}">${esc(b.customer_email)}</a></dd>`}
+    ${b.note?`<dt>Opmerking</dt><dd>“${esc(b.note)}”</dd>`:""}</dl>
+    ${s==="cancelled" ? "" : `
+    <div class="card" style="padding:18px;margin:0"><b style="font-weight:500;color:var(--ink-d)">${s==="paid"?"Afrekening aanpassen":"Afrekenen"}</b>
+      <label style="margin:10px 0 0">Bedrag (€)<input id="amt" type="number" step="0.5" min="0" value="${(amount(b)/100).toFixed(2)}"></label>
+      <div class="row2"><button class="btn small" data-pay="pin">Pin</button><button class="btn small" data-pay="contant">Contant</button>
+      ${past && s!=="ns" ? `<button class="btn small ghost danger" id="ns">Niet gekomen</button>` : ""}
+      ${s==="paid"||s==="ns" ? `<button class="btn small ghost" id="undo">Terugzetten</button>` : ""}</div></div>`}
+    <div class="row2" style="justify-content:space-between">
+      ${b.status==="confirmed" && !past ? `<button class="btn small ghost danger" id="cx">Afspraak annuleren</button>` : "<span></span>"}
+      <button class="btn small ghost" id="close">Sluiten</button></div><div id="mm"></div></div>`;
+  document.body.appendChild(m);
+  const close = () => m.remove();
+  m.onclick = e => { if (e.target === m) close(); };
+  m.querySelector("#close").onclick = close;
+  const upd = async (patch) => {
+    const { error } = await db.from("bookings").update(patch).eq("id", b.id);
+    if (error) return flash(m.querySelector("#mm"), NBF.errMsg(error), "err");
+    close(); refresh();
+  };
+  m.querySelectorAll("[data-pay]").forEach(x => x.onclick = () => {
+    const c = Math.round(parseFloat(m.querySelector("#amt").value || "0") * 100);
+    upd({ payment_method: x.dataset.pay, paid_cents: c, paid_at: nowISO(), status: "confirmed" });
+  });
+  const ns = m.querySelector("#ns"); if (ns) ns.onclick = () => upd({ status:"no_show", payment_method:null, paid_cents:null, paid_at:null });
+  const undo = m.querySelector("#undo"); if (undo) undo.onclick = () => upd({ status:"confirmed", payment_method:null, paid_cents:null, paid_at:null });
+  const cx = m.querySelector("#cx"); if (cx) cx.onclick = () => { if (confirm("Afspraak annuleren? Laat de klant het even weten.")) upd({ status:"cancelled", cancelled_at: nowISO() }); };
 }
 
-/* ---------- AFSPRAKEN ---------- */
+/* ---------- AGENDA (week) ---------- */
+let weekStart = null;
+function mondayOf(ymd){ const d = new Date(ymd+"T12:00:00Z"); const dow = (d.getUTCDay()+6)%7; return NBF.addDays(ymd, -dow); }
+async function viewAgenda(){
+  const body = $("#body"), today = NBF.ymd(new Date());
+  weekStart = weekStart || mondayOf(today);
+  const days = [...Array(7)].map((_,i)=>NBF.addDays(weekStart,i));
+  const fromISO = NBF.toISO(days[0]), toISO = NBF.toISO(NBF.addDays(days[6],1));
+  const [bk, { data: bl }, { data: hrs }] = await Promise.all([
+    allBookings(fromISO, toISO),
+    db.from("blocks").select("*").lt("starts_at", toISO).gt("ends_at", fromISO),
+    db.from("opening_hours").select("*").order("weekday")
+  ]);
+  const open = (hrs||[]).filter(h=>h.is_open);
+  let startH = Math.min(9, ...open.map(h=>+h.open_time.slice(0,2))), endH = Math.max(17, ...open.map(h=>Math.ceil(+h.close_time.slice(0,2) + (+h.close_time.slice(3,5)>0?1:0))));
+  bk.forEach(b => { if (b.status==="cancelled") return; const s=+NBF.time(b.starts_at).slice(0,2), e=+NBF.time(b.ends_at).slice(0,2)+1; startH=Math.min(startH,s); endH=Math.max(endH,Math.min(24,e)); });
+  startH = Math.max(0,startH-1); endH = Math.min(24,endH+1);
+  const PX = 1.1, H = (endH-startH)*60*PX;
+  const mins = iso => { const t = NBF.time(iso); return (+t.slice(0,2))*60 + (+t.slice(3,5)) - startH*60; };
+  const label = new Intl.DateTimeFormat("nl-NL",{day:"numeric",month:"long",timeZone:"UTC"});
+  const wkBk = bk.filter(b=>b.status!=="cancelled");
+  const rev = wkBk.filter(b=>b.payment_method).reduce((a,b)=>a+amount(b),0);
+  const toPay = wkBk.filter(b=>stateOf(b)==="open").length;
+  body.innerHTML = `
+    <div class="toolbar"><div class="grp"><button class="round" id="pw" aria-label="Vorige week">‹</button><button class="round" id="nw" aria-label="Volgende week">›</button>
+      <button class="btn small ghost" id="tw">Vandaag</button>
+      <b style="font-family:var(--display);font-stretch:125%;font-weight:500;color:var(--ink-d);font-size:16px;margin-left:6px">${label.format(new Date(days[0]+"T12:00:00Z"))} – ${label.format(new Date(days[6]+"T12:00:00Z"))}</b></div>
+      <div class="grp muted" style="font-size:13px">${wkBk.length} afspraken · ${NBF.euro(rev)} afgerekend${toPay?` · <span class="badge open">${toPay} nog afrekenen</span>`:""}</div></div>
+    <div class="wkwrap"><div class="wk">
+      <div class="hd"></div>${days.map(d=>{ const w=new Date(d+"T12:00:00Z"); return `<div class="hd ${d===today?"today":""}">${new Intl.DateTimeFormat("nl-NL",{weekday:"short",timeZone:"UTC"}).format(w)}<b>${w.getUTCDate()}</b></div>`; }).join("")}
+      <div class="hours" style="height:${H}px">${[...Array(endH-startH+1)].map((_,i)=>`<div class="hlab" style="top:${i*60*PX}px">${String(startH+i).padStart(2,"0")}:00</div>`).join("")}</div>
+      ${days.map((d,i)=>{
+        const h = (hrs||[]).find(x=>x.weekday===i+1);
+        let inner = [...Array(endH-startH)].map((_,j)=>`<div class="hl" style="top:${j*60*PX}px"></div>`).join("");
+        if (h && h.is_open) { const o=(+h.open_time.slice(0,2))*60+(+h.open_time.slice(3,5))-startH*60, c=(+h.close_time.slice(0,2))*60+(+h.close_time.slice(3,5))-startH*60;
+          inner += `<div style="position:absolute;left:0;right:0;top:0;height:${o*PX}px;background:#FBF9F6"></div><div style="position:absolute;left:0;right:0;top:${c*PX}px;bottom:0;background:#FBF9F6"></div>`; }
+        (bl||[]).forEach(k=>{ const ks = dayKey(k.starts_at) < d ? 0 : mins(k.starts_at); const ke = dayKey(new Date(new Date(k.ends_at)-1)) > d ? (endH-startH)*60 : mins(k.ends_at);
+          if (dayKey(k.starts_at) <= d && dayKey(new Date(new Date(k.ends_at)-1)) >= d) inner += `<div class="ev blk" style="top:${Math.max(0,ks)*PX}px;height:${Math.max(18,(ke-Math.max(0,ks))*PX-2)}px"><b>Dicht</b>${esc(k.reason||"")}</div>`; });
+        wkBk.filter(b=>dayKey(b.starts_at)===d).forEach(b=>{ const t=mins(b.starts_at), len=mins(b.ends_at)-t; const s=stateOf(b);
+          inner += `<div class="ev ${s==="paid"?"paid":s==="ns"?"ns":""}" data-id="${b.id}" style="top:${t*PX}px;height:${Math.max(22,len*PX-2)}px"><b>${NBF.time(b.starts_at)} ${esc(b.customer_name)}</b>${esc(fullSvc(b))}</div>`; });
+        if (d===today) { const n = new Date(); const nm = mins(n.toISOString()); if (nm>0 && nm<(endH-startH)*60) inner += `<div class="now" style="top:${nm*PX}px"></div>`; }
+        return `<div class="col ${h&&h.is_open?"":"closed"}" style="height:${H}px">${inner}</div>`;
+      }).join("")}
+    </div></div>
+    <p class="muted" style="font-size:13px;margin-top:10px">Klik op een afspraak om af te rekenen (pin of contant), "niet gekomen" te zetten of te annuleren.</p>`;
+  $("#pw").onclick = () => { weekStart = NBF.addDays(weekStart,-7); viewAgenda(); };
+  $("#nw").onclick = () => { weekStart = NBF.addDays(weekStart,7); viewAgenda(); };
+  $("#tw").onclick = () => { weekStart = mondayOf(today); viewAgenda(); };
+  body.querySelectorAll(".ev[data-id]").forEach(x => x.onclick = () => openBooking(bk.find(b=>b.id===x.dataset.id)));
+}
+
+/* ---------- AFSPRAKEN (lijst) ---------- */
 let showPast = false;
 async function viewBookings(){
   const body = $("#body"), today = NBF.ymd(new Date());
   const from = showPast ? NBF.toISO(NBF.addDays(today,-30)) : NBF.toISO(today);
-  const [{ data: bk, error }, { data: bl }] = await Promise.all([
-    db.from("bookings").select("*").gte("starts_at", from).order("starts_at").limit(500),
-    db.from("blocks").select("*").gte("ends_at", from).order("starts_at")
+  const [bk, { data: bl }, openPay] = await Promise.all([
+    allBookings(from),
+    db.from("blocks").select("*").gte("ends_at", from).order("starts_at"),
+    db.from("bookings").select("*").eq("status","confirmed").is("payment_method", null).lt("starts_at", nowISO()).order("starts_at", { ascending:false }).limit(50)
   ]);
-  if (error) return flash(body, NBF.errMsg(error), "err");
-  const active = bk.filter(b => b.status==="confirmed" && b.starts_at >= new Date().toISOString());
-  const todayCount = active.filter(b => dayKey(b.starts_at)===today).length;
+  const active = bk.filter(b => b.status==="confirmed" && b.starts_at >= nowISO());
   const weekEnd = NBF.toISO(NBF.addDays(today,7));
-  const weekRev = active.filter(b => b.starts_at < weekEnd).reduce((s,b)=>s+b.price_cents,0);
   const groups = {};
   bk.forEach(b => (groups[dayKey(b.starts_at)] ||= []).push({ type:"b", ...b }));
   (bl||[]).forEach(k => { let d = dayKey(k.starts_at); const end = dayKey(new Date(new Date(k.ends_at)-1)); while (d <= end) { (groups[d] ||= []).push({ type:"k", ...k }); d = NBF.addDays(d,1); } });
   const days = Object.keys(groups).sort();
+  const pend = (openPay.data||[]);
   body.innerHTML = `
-    <div class="stat"><div><b>${todayCount}</b><span>Vandaag</span></div><div><b>${active.filter(b=>b.starts_at<weekEnd).length}</b><span>Komende 7 dagen</span></div><div><b>${NBF.euro(weekRev)}</b><span>Omzet 7 dagen</span></div></div>
-    <div class="card"><h3>Afspraak toevoegen</h3><p class="muted" style="margin-bottom:14px;font-size:14px">Voor afspraken die via telefoon of WhatsApp binnenkomen.</p>
+    <div class="stat"><div><b>${active.filter(b => dayKey(b.starts_at)===today).length}</b><span>Nog vandaag</span></div><div><b>${active.filter(b=>b.starts_at<weekEnd).length}</b><span>Komende 7 dagen</span></div><div><b>${pend.length}</b><span>Nog afrekenen</span></div></div>
+    ${pend.length ? `<div class="card"><h3>Nog afrekenen</h3>${pend.map(b=>`<div class="appt"><div class="tm">${new Intl.DateTimeFormat("nl-NL",{timeZone:NBF.tz,day:"numeric",month:"short"}).format(new Date(b.starts_at))}<small>${NBF.time(b.starts_at)}</small></div>
+      <div><span class="who">${esc(b.customer_name)}</span> · ${esc(fullSvc(b))} · ${NBF.euro(b.price_cents)}</div>
+      <div class="acts"><button class="btn small" data-o="${b.id}">Afrekenen</button></div></div>`).join("")}</div>` : ""}
+    <div class="card"><h3>Afspraak toevoegen</h3><p class="muted" style="margin-bottom:14px;font-size:14px">Voor afspraken die via telefoon, Instagram of WhatsApp binnenkomen.</p>
       <form id="af"><div class="grid4">
-        <label>Behandeling<select name="svc">${services.filter(s=>s.active).map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join("")}</select></label>
-        <label>Datum<input type="date" name="d" required min="${today}"></label>
+        <label>Behandeling<select name="svc">${services.filter(s=>s.active && !s.is_extra).map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join("")}</select></label>
+        <label>Datum<input type="date" name="d" required></label>
         <label>Tijd<input type="time" name="t" required step="300"></label>
         <label>Naam<input name="name" required minlength="2"></label>
         <label>Telefoon<input name="phone" required minlength="6"></label>
         <label>E-mail (optioneel)<input name="email" type="email"></label>
-      </div><button class="btn small">Toevoegen</button><div id="am"></div></form></div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin:28px 0 14px"><h3 style="font-size:30px">Overzicht</h3>
+      </div>${services.some(s=>s.active&&s.is_extra) ? `<div style="display:flex;gap:16px;flex-wrap:wrap;margin:4px 0 16px">${services.filter(s=>s.active&&s.is_extra).map(s=>`<label class="chk"><input type="checkbox" name="x" value="${s.id}"> ${esc(s.name)} (+${NBF.euro(s.price_cents)})</label>`).join("")}</div>`:""}
+      <button class="btn small">Toevoegen</button><div id="am"></div></form></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin:28px 0 14px;gap:10px;flex-wrap:wrap"><h3 style="font-size:26px">Overzicht</h3>
       <label class="chk"><input type="checkbox" id="past" ${showPast?"checked":""}> Ook afgelopen 30 dagen</label></div>
     ${days.length ? days.map(d => `<div class="day"><h4>${dayLabel(d)}${d===today?" · vandaag":""}</h4>${
       groups[d].sort((a,b)=>a.starts_at.localeCompare(b.starts_at)).map(x => x.type==="k"
-        ? `<div class="appt blk"><div class="tm">${dayKey(x.starts_at)<d?"00:00":NBF.time(x.starts_at)}</div><div><span class="who">Geblokkeerd</span><small>${esc(x.reason||"Agenda dicht")} · tot ${dayKey(x.ends_at)===d && NBF.time(x.ends_at)!=="00:00" ? NBF.time(x.ends_at) : "einde dag"}</small></div><div></div></div>`
+        ? `<div class="appt blk"><div class="tm">${dayKey(x.starts_at)<d?"00:00":NBF.time(x.starts_at)}</div><div><span class="who">Agenda dicht</span><small>${esc(x.reason||"")} · tot ${dayKey(x.ends_at)===d && NBF.time(x.ends_at)!=="00:00" ? NBF.time(x.ends_at) : "einde dag"}</small></div><div></div></div>`
         : `<div class="appt ${x.status==="cancelled"?"x":""}"><div class="tm">${NBF.time(x.starts_at)}<small>tot ${NBF.time(x.ends_at)}</small></div>
-           <div><span class="who">${esc(x.customer_name)}</span> · ${esc(x.service_name)} · ${NBF.euro(x.price_cents)}
-           <small><a href="tel:${esc(x.customer_phone)}">${esc(x.customer_phone)}</a>${x.customer_email.endsWith("@nailsbyfrances.nl")?"":` · <a href="mailto:${esc(x.customer_email)}">${esc(x.customer_email)}</a>`}${x.source==="admin"?" · zelf ingepland":""}</small>
-           ${x.note?`<small>“${esc(x.note)}”</small>`:""}${x.status==="cancelled"?"<small>Geannuleerd</small>":""}</div>
-           <div>${x.status==="confirmed"&&x.starts_at>new Date().toISOString()?`<button class="btn small ghost danger" data-c="${x.id}">Annuleren</button>`:""}</div></div>`).join("")}</div>`).join("")
+           <div><span class="who">${esc(x.customer_name)}</span> · ${esc(fullSvc(x))} · ${NBF.euro(x.price_cents)} ${badge(x)}
+           <small><a href="tel:${esc(x.customer_phone)}">${esc(x.customer_phone)}</a>${isPlaceholder(x.customer_email)?"":` · <a href="mailto:${esc(x.customer_email)}">${esc(x.customer_email)}</a>`}${x.source==="admin"?" · zelf ingepland":""}</small>
+           ${x.note?`<small>“${esc(x.note)}”</small>`:""}</div>
+           <div class="acts">${x.status!=="cancelled"?`<button class="btn small ghost" data-o="${x.id}">Openen</button>`:""}</div></div>`).join("")}</div>`).join("")
       : `<p class="muted">Nog geen afspraken gepland.</p>`}`;
+  const all = [...bk, ...pend];
+  body.querySelectorAll("[data-o]").forEach(b => b.onclick = () => openBooking(all.find(x=>x.id===b.dataset.o)));
   $("#past").onchange = e => { showPast = e.target.checked; viewBookings(); };
-  body.querySelectorAll("[data-c]").forEach(b => b.onclick = async () => {
-    if (!confirm("Deze afspraak annuleren? Laat de klant het even weten.")) return;
-    const { error } = await db.from("bookings").update({ status:"cancelled", cancelled_at:new Date().toISOString() }).eq("id", b.dataset.c);
-    if (error) alert(NBF.errMsg(error)); else viewBookings();
-  });
   $("#af").onsubmit = async e => {
-    e.preventDefault(); const v = Object.fromEntries(new FormData(e.target)); const s = services.find(x=>x.id===v.svc);
-    const start = NBF.toISO(v.d, v.t), end = new Date(new Date(start).getTime() + s.duration_min*60000).toISOString();
-    const { error } = await db.from("bookings").insert({ service_id:s.id, service_name:s.name, price_cents:s.price_cents, duration_min:s.duration_min,
-      starts_at:start, ends_at:end, customer_name:v.name.trim(), customer_phone:v.phone.trim(),
-      customer_email:(v.email||"").trim().toLowerCase() || "geen-email@nailsbyfrances.nl", source:"admin" });
+    e.preventDefault(); const f = new FormData(e.target), v = Object.fromEntries(f); const s = services.find(x=>x.id===v.svc);
+    const ex = services.filter(x => f.getAll("x").includes(x.id));
+    const dur = s.duration_min + ex.reduce((a,x)=>a+x.duration_min,0), price = s.price_cents + ex.reduce((a,x)=>a+x.price_cents,0);
+    const start = NBF.toISO(v.d, v.t), end = new Date(new Date(start).getTime() + dur*60000).toISOString();
+    const { error } = await db.from("bookings").insert({ service_id:s.id, service_name:s.name, extras: ex.length ? ex.map(x=>x.name).join(", ") : null,
+      price_cents:price, duration_min:dur, starts_at:start, ends_at:end, customer_name:v.name.trim(), customer_phone:v.phone.trim(),
+      customer_email:(v.email||"").trim().toLowerCase() || "geen-email@nailbarbyfran.nl", source:"admin" });
     if (error) return flash($("#am"), /no_overlap|exclusion/.test(error.message) ? "Er staat op dat moment al een afspraak." : NBF.errMsg(error), "err");
     viewBookings();
   };
+}
+
+/* ---------- KLANTEN ---------- */
+async function viewCustomers(){
+  const body = $("#body"), bk = await allBookings();
+  const map = new Map();
+  bk.filter(b=>b.status!=="cancelled").forEach(b => {
+    const key = isPlaceholder(b.customer_email) ? "tel:" + b.customer_phone.replace(/\D/g,"") : b.customer_email;
+    const c = map.get(key) || { name:b.customer_name, phone:b.customer_phone, email:isPlaceholder(b.customer_email)?"":b.customer_email, visits:0, ns:0, spent:0, first:null, last:null, next:null };
+    if (b.starts_at < nowISO()) {
+      if (b.status==="no_show") c.ns++; else { c.visits++; c.last = b.starts_at; c.first = c.first || b.starts_at; }
+      if (b.payment_method) c.spent += amount(b);
+    } else if (b.status==="confirmed" && !c.next) c.next = b.starts_at;
+    c.name = b.customer_name; c.phone = b.customer_phone;
+    map.set(key, c);
+  });
+  const list = [...map.values()].sort((a,b)=>(b.last||b.next||"").localeCompare(a.last||a.next||""));
+  const monthStart = NBF.toISO(NBF.ymd(new Date()).slice(0,7)+"-01");
+  const fmtD = iso => iso ? new Intl.DateTimeFormat("nl-NL",{timeZone:NBF.tz,day:"numeric",month:"short",year:"numeric"}).format(new Date(iso)) : "–";
+  const draw = (qs="") => {
+    const q = qs.toLowerCase(), rows = list.filter(c => !q || (c.name+" "+c.phone+" "+c.email).toLowerCase().includes(q));
+    $("#ctb").innerHTML = rows.length ? rows.map(c=>`<tr><td><b style="font-weight:500">${esc(c.name)}</b>${c.ns?` <span class="badge ns">${c.ns}× niet gekomen</span>`:""}</td>
+      <td><a href="tel:${esc(c.phone)}">${esc(c.phone)}</a>${c.email?`<br><small class="muted">${esc(c.email)}</small>`:""}</td>
+      <td class="r">${c.visits}</td><td>${fmtD(c.last)}</td><td>${c.next?fmtD(c.next):"–"}</td><td class="r">${NBF.euro(c.spent)}</td></tr>`).join("")
+      : `<tr><td colspan="6" class="muted">Geen klanten gevonden.</td></tr>`;
+  };
+  body.innerHTML = `
+    <div class="stat"><div><b>${list.length}</b><span>Klanten totaal</span></div>
+      <div><b>${list.filter(c=>c.first && c.first>=monthStart).length}</b><span>Nieuw deze maand</span></div>
+      <div><b>${list.filter(c=>c.visits>=2).length}</b><span>Vaste klanten</span><small>2 of meer bezoeken</small></div></div>
+    <div class="card"><div class="toolbar"><input id="q" placeholder="Zoek op naam, telefoon of e-mail" style="max-width:340px"><button class="btn small ghost" id="exp">Exporteer (Excel/CSV)</button></div>
+      <div class="tblwrap"><table class="tbl"><thead><tr><th>Naam</th><th>Contact</th><th class="r">Bezoeken</th><th>Laatst geweest</th><th>Volgende afspraak</th><th class="r">Totaal besteed</th></tr></thead><tbody id="ctb"></tbody></table></div></div>`;
+  draw();
+  $("#q").oninput = e => draw(e.target.value);
+  $("#exp").onclick = () => csv([["Naam","Telefoon","E-mail","Bezoeken","Niet gekomen","Eerste bezoek","Laatste bezoek","Volgende afspraak","Totaal besteed"],
+    ...list.map(c=>[c.name,c.phone,c.email,c.visits,c.ns,c.first?dayKey(c.first):"",c.last?dayKey(c.last):"",c.next?dayKey(c.next):"",(c.spent/100).toFixed(2).replace(".",",")])], "klanten-nail-bar-by-fran.csv");
+}
+
+/* ---------- BOEKHOUDING ---------- */
+let bookMonth = null;
+async function viewBooks(){
+  const body = $("#body"); bookMonth = bookMonth || NBF.ymd(new Date()).slice(0,7);
+  const [y,m] = bookMonth.split("-").map(Number);
+  const mFrom = `${bookMonth}-01`, mTo = new Date(Date.UTC(y,m,1)).toISOString().slice(0,10);
+  const q = Math.floor((m-1)/3), qFrom = `${y}-${String(q*3+1).padStart(2,"0")}-01`, qTo = new Date(Date.UTC(y,q*3+3,1)).toISOString().slice(0,10);
+  const yFrom = `${y}-01-01`, yTo = `${y+1}-01-01`;
+  const bk = await allBookings(NBF.toISO(yFrom), NBF.toISO(yTo));
+  const inR = (b,a,z) => b.starts_at >= NBF.toISO(a) && b.starts_at < NBF.toISO(z);
+  const paid = bk.filter(b => b.payment_method);
+  const mp = paid.filter(b=>inR(b,mFrom,mTo)), qp = paid.filter(b=>inR(b,qFrom,qTo));
+  const sum = a => a.reduce((s,b)=>s+amount(b),0);
+  const mRev = sum(mp), mCash = sum(mp.filter(b=>b.payment_method==="contant")), mPin = sum(mp.filter(b=>b.payment_method==="pin"));
+  const openM = bk.filter(b=>inR(b,mFrom,mTo) && stateOf(b)==="open");
+  const planned = bk.filter(b=>inR(b,mFrom,mTo) && stateOf(b)==="planned");
+  const nsM = bk.filter(b=>inR(b,mFrom,mTo) && b.status==="no_show").length;
+  const rate = Number(settings.vat_rate);
+  const monthName = new Intl.DateTimeFormat("nl-NL",{month:"long",year:"numeric",timeZone:"UTC"}).format(new Date(Date.UTC(y,m-1,1)));
+  const perMonth = [...Array(12)].map((_,i)=>{ const a=`${y}-${String(i+1).padStart(2,"0")}-01`, z=new Date(Date.UTC(y,i+1,1)).toISOString().slice(0,10); return sum(paid.filter(b=>inR(b,a,z))); });
+  const maxM = Math.max(1,...perMonth);
+  body.innerHTML = `
+    <div class="toolbar"><div class="grp"><label style="margin:0">Maand<input type="month" id="mon" value="${bookMonth}" style="margin-top:4px"></label></div>
+      <div class="grp"><button class="btn small" id="exp">Exporteer ${esc(monthName)} voor boekhouder</button></div></div>
+    <div class="stat">
+      <div><b>${NBF.euro(mRev)}</b><span>Omzet ${esc(monthName)}</span><small>incl. btw · ${mp.length} afgerekend</small></div>
+      <div><b>${NBF.euro(mPin)}</b><span>Pin</span><small>${mp.filter(b=>b.payment_method==="pin").length}×</small></div>
+      <div><b>${NBF.euro(mCash)}</b><span>Contant</span><small>${mp.filter(b=>b.payment_method==="contant").length}×</small></div>
+      <div><b>${euro2(vatOf(mRev))}</b><span>Btw ${rate}% deze maand</span><small>excl. btw: ${euro2(mRev - vatOf(mRev))}</small></div>
+    </div>
+    <div class="stat">
+      <div><b>${euro2(vatOf(sum(qp)))}</b><span>Btw af te dragen Q${q+1} ${y}</span><small>over ${NBF.euro(sum(qp))} omzet · aangifte uiterlijk ${["30 april","31 juli","31 oktober","31 januari"][q]}</small></div>
+      <div><b>${NBF.euro(sum(planned))}</b><span>Nog verwacht deze maand</span><small>${planned.length} geplande afspraken</small></div>
+      <div><b>${openM.length}</b><span>Nog afrekenen</span><small>${nsM} niet gekomen</small></div>
+    </div>
+    <div class="card"><h3>Omzet per maand · ${y}</h3>
+      <div style="display:grid;grid-template-columns:repeat(12,1fr);gap:6px;align-items:end;height:160px;margin-top:10px">${perMonth.map((v,i)=>`<div title="${NBF.euro(v)}" style="display:flex;flex-direction:column;justify-content:flex-end;height:100%;cursor:pointer" data-m="${y}-${String(i+1).padStart(2,"0")}">
+        <div style="height:${Math.max(2,v/maxM*130)}px;background:${i===m-1?"var(--brand)":"var(--sand-d)"};border-radius:6px 6px 2px 2px"></div>
+        <small style="text-align:center;font-size:10.5px;color:var(--muted);margin-top:4px">${new Intl.DateTimeFormat("nl-NL",{month:"short",timeZone:"UTC"}).format(new Date(Date.UTC(y,i,1)))}</small></div>`).join("")}</div></div>
+    ${openM.length?`<div class="card"><h3>Nog afrekenen</h3>${openM.map(b=>`<div class="appt"><div class="tm">${new Intl.DateTimeFormat("nl-NL",{timeZone:NBF.tz,day:"numeric",month:"short"}).format(new Date(b.starts_at))}<small>${NBF.time(b.starts_at)}</small></div><div><span class="who">${esc(b.customer_name)}</span> · ${esc(fullSvc(b))} · ${NBF.euro(b.price_cents)}</div><div class="acts"><button class="btn small" data-o="${b.id}">Afrekenen</button></div></div>`).join("")}</div>`:""}
+    <div class="card"><h3>Afgerekend in ${esc(monthName)}</h3><div class="tblwrap"><table class="tbl"><thead><tr><th>Datum</th><th>Klant</th><th>Behandeling</th><th>Betaling</th><th class="r">Bedrag</th><th class="r">Btw</th></tr></thead><tbody>
+      ${mp.length ? mp.map(b=>`<tr data-o="${b.id}" style="cursor:pointer"><td>${new Intl.DateTimeFormat("nl-NL",{timeZone:NBF.tz,day:"numeric",month:"short"}).format(new Date(b.starts_at))} ${NBF.time(b.starts_at)}</td><td>${esc(b.customer_name)}</td><td>${esc(fullSvc(b))}</td><td>${b.payment_method==="pin"?"Pin":"Contant"}</td><td class="r">${euro2(amount(b))}</td><td class="r">${euro2(vatOf(amount(b)))}</td></tr>`).join("")
+        : `<tr><td colspan="6" class="muted">Nog niets afgerekend deze maand. Klik in de agenda op een afspraak om af te rekenen.</td></tr>`}
+      </tbody></table></div>
+      <p class="muted" style="font-size:12.5px;margin-top:12px">Btw is berekend als ${rate}% inbegrepen in je prijzen. Gebruik je de kleineondernemersregeling (KOR)? Zet het btw-tarief dan op 0% onder "Openingstijden &amp; planning". Dit is een indicatie; je boekhouder doet de officiële aangifte.</p></div>`;
+  $("#mon").onchange = e => { if (e.target.value) { bookMonth = e.target.value; viewBooks(); } };
+  body.querySelectorAll("[data-m]").forEach(x => x.onclick = () => { bookMonth = x.dataset.m; viewBooks(); });
+  body.querySelectorAll("[data-o]").forEach(x => x.onclick = () => openBooking(bk.find(b=>b.id===x.dataset.o)));
+  $("#exp").onclick = () => csv([["Datum","Tijd","Klant","Behandeling","Betaalwijze","Bedrag incl. btw","Btw-tarief","Btw","Bedrag excl. btw"],
+    ...mp.map(b=>{ const a = amount(b), v = vatOf(a); return [dayKey(b.starts_at), NBF.time(b.starts_at), b.customer_name, fullSvc(b), b.payment_method, (a/100).toFixed(2).replace(".",","), rate+"%", (v/100).toFixed(2).replace(".",","), ((a-v)/100).toFixed(2).replace(".",",")]; }),
+    [], ["Totaal","","","","",(mRev/100).toFixed(2).replace(".",","),"",(vatOf(mRev)/100).toFixed(2).replace(".",","),((mRev-vatOf(mRev))/100).toFixed(2).replace(".",",")],
+    ["Waarvan pin","","","","",(mPin/100).toFixed(2).replace(".",",")], ["Waarvan contant","","","","",(mCash/100).toFixed(2).replace(".",",")]],
+    `omzet-${bookMonth}-nail-bar-by-fran.csv`);
 }
 
 /* ---------- AGENDA DICHTZETTEN ---------- */
@@ -150,10 +413,10 @@ function blockRange(k){
 }
 async function viewBlocks(){
   const body = $("#body"), today = NBF.ymd(new Date());
-  const { data, error } = await db.from("blocks").select("*").gte("ends_at", new Date().toISOString()).order("starts_at");
+  const { data, error } = await db.from("blocks").select("*").gte("ends_at", nowISO()).order("starts_at");
   if (error) return flash(body, NBF.errMsg(error), "err");
   body.innerHTML = `<div class="card"><h3>Agenda dichtzetten</h3>
-    <p class="muted" style="margin-bottom:16px;font-size:14px">Voor vakantie, een vrije dag of een paar uur tussendoor. Klanten kunnen in die periode niet boeken. Bestaande afspraken blijven gewoon staan.</p>
+    <p class="muted" style="margin-bottom:16px;font-size:14px">Voor vakantie, een vrije dag of een paar uur tussendoor. Klanten kunnen in die periode niet boeken. Bestaande afspraken blijven staan.</p>
     <form id="bf">
       <label class="chk" style="margin-bottom:14px"><input type="checkbox" name="whole" id="whole" checked> Hele dag(en)</label>
       <div class="grid4">
@@ -166,7 +429,7 @@ async function viewBlocks(){
       <button class="btn small">Dichtzetten</button><div id="bm"></div></form></div>
     <div class="card"><h3>Gepland dicht</h3>${data.length ? data.map(k=>`<div class="appt"><div class="tm">${new Intl.DateTimeFormat("nl-NL",{timeZone:NBF.tz,day:"numeric",month:"short"}).format(new Date(k.starts_at))}</div>
       <div><span class="who">${esc(k.reason||"Agenda dicht")}</span><small>${blockRange(k)}</small></div>
-      <div><button class="btn small ghost" data-del="${k.id}">Weer openen</button></div></div>`).join("") : `<p class="muted">Er staat niets dicht.</p>`}</div>`;
+      <div class="acts"><button class="btn small ghost" data-del="${k.id}">Weer openen</button></div></div>`).join("") : `<p class="muted">Er staat niets dicht.</p>`}</div>`;
   const sync = () => body.querySelectorAll("label.tm").forEach(l => l.style.display = $("#whole").checked ? "none" : "");
   $("#whole").onchange = sync; sync();
   body.querySelectorAll("[data-del]").forEach(b => b.onclick = async () => { await db.from("blocks").delete().eq("id", b.dataset.del); viewBlocks(); });
@@ -183,34 +446,37 @@ async function viewBlocks(){
     if (error) return flash($("#bm"), NBF.errMsg(error), "err");
     const { count } = await db.from("bookings").select("id",{count:"exact",head:true}).eq("status","confirmed").lt("starts_at", rows.at(-1).ends_at).gt("ends_at", rows[0].starts_at);
     viewBlocks();
-    if (count) setTimeout(()=>alert(`Let op: er staan in deze periode al ${count} afspraak/afspraken. Die blijven staan — annuleer ze zo nodig bij 'Afspraken'.`), 200);
+    if (count) setTimeout(()=>alert(`Let op: er staan in deze periode al ${count} afspraak/afspraken. Die blijven staan. Annuleer ze zo nodig in de agenda.`), 200);
   };
 }
 
-/* ---------- OPENINGSTIJDEN ---------- */
+/* ---------- OPENINGSTIJDEN & PLANNING ---------- */
 async function viewHours(){
   const body = $("#body"); const names = ["","Maandag","Dinsdag","Woensdag","Donderdag","Vrijdag","Zaterdag","Zondag"];
-  const [{ data, error }, { data: sts }] = await Promise.all([db.from("opening_hours").select("*").order("weekday"), db.from("settings").select("*").limit(1)]);
+  const { data, error } = await db.from("opening_hours").select("*").order("weekday");
   if (error) return flash(body, NBF.errMsg(error), "err");
-  const st = sts && sts[0];
-  body.innerHTML = `<div class="card"><h3>Vaste openingstijden</h3><p class="muted" style="margin-bottom:16px;font-size:14px">Dit is je standaardweek. Voor losse dagen gebruik je 'Agenda dichtzetten'.</p>
-    ${data.map(h=>`<div class="hrow" data-w="${h.weekday}"><b style="font-weight:400">${names[h.weekday]}</b>
+  const st = settings;
+  body.innerHTML = `<div class="card"><h3>Vaste openingstijden</h3><p class="muted" style="margin-bottom:16px;font-size:14px">Dit is je standaardweek. Voor losse dagen gebruik je "Agenda dichtzetten".</p>
+    ${data.map(h=>`<div class="hrow" data-w="${h.weekday}"><b style="font-weight:500;color:var(--ink-d)">${names[h.weekday]}</b>
       <label class="chk"><input type="checkbox" ${h.is_open?"checked":""}> Open</label>
       <input type="time" value="${h.open_time.slice(0,5)}" step="900"><input type="time" value="${h.close_time.slice(0,5)}" step="900"></div>`).join("")}
     <div style="margin-top:18px"><button class="btn small" id="sv">Opslaan</button></div><div id="hm"></div></div>
-    <div class="card"><h3>Planning</h3><p class="muted" style="margin-bottom:16px;font-size:14px">Pauze na elke afspraak (opruimen, schoonmaken) en om de hoeveel minuten klanten een starttijd zien.</p>
-      <div class="grid3"><label>Pauze tussen afspraken<select id="buf">${[0,5,10,15,20,30].map(m=>`<option value="${m}" ${m===(st?.buffer_min??15)?"selected":""}>${m} minuten</option>`).join("")}</select></label>
-      <label>Starttijden<select id="step">${[[15,"Elk kwartier"],[30,"Elk half uur"],[60,"Elk heel uur"]].map(([m,t])=>`<option value="${m}" ${m===(st?.slot_step_min??30)?"selected":""}>${t}</option>`).join("")}</select></label></div>
+    <div class="card"><h3>Planning &amp; btw</h3><p class="muted" style="margin-bottom:16px;font-size:14px">Pauze na elke afspraak, om de hoeveel minuten klanten een starttijd zien, en je btw-tarief voor de boekhouding.</p>
+      <div class="grid3"><label>Pauze tussen afspraken<select id="buf">${[0,5,10,15,20,30].map(m=>`<option value="${m}" ${m===(st.buffer_min??15)?"selected":""}>${m} minuten</option>`).join("")}</select></label>
+      <label>Starttijden<select id="step">${[[15,"Elk kwartier"],[30,"Elk half uur"],[60,"Elk heel uur"]].map(([m,t])=>`<option value="${m}" ${m===(st.slot_step_min??30)?"selected":""}>${t}</option>`).join("")}</select></label>
+      <label>Btw-tarief<select id="vat">${[[21,"21%"],[9,"9%"],[0,"0% (KOR)"]].map(([m,t])=>`<option value="${m}" ${m===Number(st.vat_rate??21)?"selected":""}>${t}</option>`).join("")}</select></label></div>
       <button class="btn small" id="sv2">Opslaan</button><div id="pm2"></div></div>`;
-  $("#sv2").onclick = async () => {
-    const { error } = await db.from("settings").upsert({ id:true, buffer_min:+$("#buf").value, slot_step_min:+$("#step").value });
-    error ? flash($("#pm2"), NBF.errMsg(error), "err") : flash($("#pm2"), "Opgeslagen ✓");
-  };
   $("#sv").onclick = async () => {
     const rows = [...body.querySelectorAll(".hrow")].map(r => { const i = r.querySelectorAll("input"); return { weekday:+r.dataset.w, is_open:i[0].checked, open_time:i[1].value, close_time:i[2].value }; });
     if (rows.some(r => r.close_time <= r.open_time)) return flash($("#hm"), "Sluitingstijd moet na openingstijd liggen.", "err");
     const { error } = await db.from("opening_hours").upsert(rows);
     error ? flash($("#hm"), NBF.errMsg(error), "err") : flash($("#hm"), "Opgeslagen ✓");
+  };
+  $("#sv2").onclick = async () => {
+    const rec = { id:true, buffer_min:+$("#buf").value, slot_step_min:+$("#step").value, vat_rate:+$("#vat").value };
+    const { error } = await db.from("settings").upsert(rec);
+    if (error) return flash($("#pm2"), NBF.errMsg(error), "err");
+    settings = { ...settings, ...rec }; flash($("#pm2"), "Opgeslagen ✓");
   };
 }
 
@@ -219,17 +485,23 @@ async function viewServices(){
   const body = $("#body");
   const { data, error } = await db.from("services").select("*").order("sort"); if (error) return flash(body, NBF.errMsg(error), "err");
   services = data;
+  const cats = [...new Set(data.map(s=>s.category).filter(Boolean))];
   const row = s => `<div class="srow" data-id="${s?.id||""}">
     <label>Naam<input name="name" value="${esc(s?.name||"")}" placeholder="Nieuwe behandeling"></label>
+    <label>Categorie<input name="cat" list="cats" value="${esc(s?.category||"")}"></label>
     <label>Prijs (€)<input name="price" type="number" min="0" step="0.5" value="${s?(s.price_cents/100):""}"></label>
     <label>Duur (min)<input name="dur" type="number" min="5" step="5" value="${s?.duration_min||""}"></label>
+    <label class="chk" title="Een extra kan alleen bij een behandeling worden toegevoegd"><input name="extra" type="checkbox" ${s?.is_extra?"checked":""}> Extra</label>
     <label class="chk"><input name="active" type="checkbox" ${!s||s.active?"checked":""}> Online</label>
-    <button class="btn small" data-save>${s?"Opslaan":"Toevoegen"}</button></div>`;
-  body.innerHTML = `<div class="card"><h3>Behandelingen & prijzen</h3><p class="muted" style="margin-bottom:10px;font-size:14px">Haal het vinkje 'Online' weg om een behandeling te verbergen. De duur bepaalt welke tijden klanten zien.</p>
+    <button class="btn small" data-save>${s?"Opslaan":"Toevoegen"}</button>
+    <label style="grid-column:1/-1;margin:0">Omschrijving<input name="desc" value="${esc(s?.description||"")}"></label></div>`;
+  body.innerHTML = `<div class="card"><h3>Behandelingen &amp; prijzen</h3><p class="muted" style="margin-bottom:10px;font-size:14px">De duur bepaalt welke tijden klanten zien. Vink "Extra" aan voor iets dat klanten bij een behandeling kunnen toevoegen (zoals nail art of French). Haal "Online" weg om iets te verbergen.</p>
+    <datalist id="cats">${cats.map(c=>`<option value="${esc(c)}">`).join("")}</datalist>
     ${data.map(row).join("")}<div style="margin-top:22px"></div>${row(null)}<div id="sm"></div></div>`;
   body.querySelectorAll("[data-save]").forEach(b => b.onclick = async () => {
     const r = b.closest(".srow"), g = n => r.querySelector(`[name=${n}]`);
-    const rec = { name:g("name").value.trim(), price_cents:Math.round(parseFloat(g("price").value||"0")*100), duration_min:parseInt(g("dur").value||"0"), active:g("active").checked };
+    const rec = { name:g("name").value.trim(), category:g("cat").value.trim() || "Overig", description:g("desc").value.trim() || null,
+      price_cents:Math.round(parseFloat(g("price").value||"0")*100), duration_min:parseInt(g("dur").value||"0"), is_extra:g("extra").checked, active:g("active").checked };
     if (rec.name.length < 2 || !(rec.duration_min >= 5)) return flash($("#sm"), "Vul een naam en duur (min. 5 minuten) in.", "err");
     const q = r.dataset.id ? db.from("services").update(rec).eq("id", r.dataset.id) : db.from("services").insert({ ...rec, sort: data.length+1 });
     const { error } = await q; if (error) return flash($("#sm"), NBF.errMsg(error), "err");
@@ -238,7 +510,7 @@ async function viewServices(){
 }
 
 /* ---------- ACCOUNT ---------- */
-function viewAccount(){
+async function viewAccount(){
   const body = $("#body");
   body.innerHTML = `<div class="card" style="max-width:480px"><h3>Wachtwoord wijzigen</h3>
     <form id="pf"><label>Nieuw wachtwoord<input type="password" name="p1" minlength="8" required autocomplete="new-password"></label>

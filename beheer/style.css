@@ -151,3 +151,12 @@ section[id]{scroll-margin-top:72px}
 @media(max-width:760px){.announce{font-size:9.5px;letter-spacing:.1em}.logo{font-size:15px;letter-spacing:.04em}nav.links .r .btn{padding:8px 13px;font-size:10px;white-space:nowrap;letter-spacing:.1em}header.nav .wrap{height:60px}}
 .logo img{height:58px;width:auto;display:block}
 @media(max-width:760px){.logo img{height:40px}}
+.menu-cat{font-size:13px;letter-spacing:.2em;text-transform:uppercase;text-align:center;margin:44px 0 6px;font-weight:500;color:var(--ink)}
+.menu-cat:first-child{margin-top:0}
+.extras{display:grid;gap:8px}
+.extra{display:grid;grid-template-columns:auto 1fr auto auto;gap:14px;align-items:center;background:var(--panel);border-radius:14px;padding:14px 18px;margin:0;cursor:pointer;text-transform:none;letter-spacing:0;font-size:15px;color:var(--ink-d);font-weight:400;border:1px solid transparent}
+.extra:hover{border-color:var(--sand-d)}
+.extra input{width:18px;height:18px;margin:0}
+.extra .n{font-family:var(--display);font-stretch:125%;font-weight:500;font-size:14px}
+.extra .t{font-size:13px;color:var(--muted)}
+.extra .p{font-family:var(--display);font-stretch:125%;font-weight:500;font-size:14px}
