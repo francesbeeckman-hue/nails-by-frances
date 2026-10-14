@@ -176,7 +176,7 @@ function stepExtras(){
 
 async function stepMoment(){
   setStep(2);
-  const today = NBF.ymd(new Date()), maxDay = NBF.addDays(today, 60);
+  const today = NBF.ymd(new Date()), maxDay = NBF.addDays(today, 365);
   const [y,m] = S.month.split("-").map(Number);
   const first = `${S.month}-01`, last = new Date(Date.UTC(y, m, 0)).toISOString().slice(0,10);
   const label = new Intl.DateTimeFormat("nl-NL",{month:"long",year:"numeric",timeZone:"UTC"}).format(new Date(Date.UTC(y,m-1,1)));
