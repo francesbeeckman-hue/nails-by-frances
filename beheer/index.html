@@ -75,6 +75,15 @@ table.tbl{width:100%;border-collapse:collapse;font-size:14px}
 @media(max-width:700px){.ytiles{grid-template-columns:repeat(3,minmax(0,1fr))}.mcal{gap:3px}.mcal button{min-height:48px;padding:4px 5px;border-radius:8px}.mcal button .c{font-size:10px}.seg button{padding:8px 11px}}
 @media(max-width:360px){.ytiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:700px){.ytiles button{padding:12px}.ytiles .big{font-size:19px}}
+.wk.wk1{grid-template-columns:54px minmax(0,1fr);min-width:0}
+.wk.wk1 .ev{font-size:13px;padding:8px 12px}
+.wk.wk1 .ev .badge{margin-left:4px}
+.wk .ev .evx{display:block;color:var(--ink);font-size:12px;margin-top:2px}
+.wk .lunch{position:absolute;left:0;right:0;background:repeating-linear-gradient(45deg,#F7F4EF,#F7F4EF 5px,#fff 5px,#fff 10px);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:2px 6px;border-top:1px dashed var(--sand-d);border-bottom:1px dashed var(--sand-d)}
+.agm button{min-height:92px}
+.agm .mini{display:flex;flex-direction:column;gap:1px;margin-top:4px}
+.agm .mini i{font-style:normal;font-size:11px;color:var(--ink-d);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:700px){.agm button{min-height:58px}.agm .mini i{display:none}.agm .mini i:first-child{display:block;font-size:9.5px}}
 .toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:14px}
 .toolbar .grp{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .toolbar input,.toolbar select{margin:0;width:auto}
@@ -230,55 +239,90 @@ function openBooking(b){
   const cx = m.querySelector("#cx"); if (cx) cx.onclick = () => { if (confirm("Afspraak annuleren? Laat de klant het even weten.")) upd({ status:"cancelled", cancelled_at: nowISO() }); };
 }
 
-/* ---------- AGENDA (week) ---------- */
-let weekStart = null;
+/* ---------- AGENDA (dag / week / maand) ---------- */
+let weekStart = null, agMode = null, agDate = null;
 function mondayOf(ymd){ const d = new Date(ymd+"T12:00:00Z"); const dow = (d.getUTCDay()+6)%7; return NBF.addDays(ymd, -dow); }
 async function viewAgenda(){
   const body = $("#body"), today = NBF.ymd(new Date());
-  weekStart = weekStart || mondayOf(today);
-  const days = [...Array(7)].map((_,i)=>NBF.addDays(weekStart,i));
-  const fromISO = NBF.toISO(days[0]), toISO = NBF.toISO(NBF.addDays(days[6],1));
+  agMode = agMode || (innerWidth < 700 ? "dag" : "week");
+  agDate = agDate || today;
+  let days, fromYmd, toYmd;
+  if (agMode === "dag") { days = [agDate]; fromYmd = agDate; toYmd = NBF.addDays(agDate,1); }
+  else if (agMode === "week") { const m = mondayOf(agDate); days = [...Array(7)].map((_,i)=>NBF.addDays(m,i)); fromYmd = m; toYmd = NBF.addDays(m,7); }
+  else { fromYmd = agDate.slice(0,8)+"01"; toYmd = ymdShift(fromYmd,1); days = []; }
+  const fromISO = NBF.toISO(fromYmd), toISO = NBF.toISO(toYmd);
   const [bk, { data: bl }, { data: hrs }] = await Promise.all([
     allBookings(fromISO, toISO),
     db.from("blocks").select("*").lt("starts_at", toISO).gt("ends_at", fromISO),
     db.from("opening_hours").select("*").order("weekday")
   ]);
-  const open = (hrs||[]).filter(h=>h.is_open);
-  let startH = Math.min(9, ...open.map(h=>+h.open_time.slice(0,2))), endH = Math.max(17, ...open.map(h=>Math.ceil(+h.close_time.slice(0,2) + (+h.close_time.slice(3,5)>0?1:0))));
-  bk.forEach(b => { if (b.status==="cancelled") return; const s=+NBF.time(b.starts_at).slice(0,2), e=+NBF.time(b.ends_at).slice(0,2)+1; startH=Math.min(startH,s); endH=Math.max(endH,Math.min(24,e)); });
-  startH = Math.max(0,startH-1); endH = Math.min(24,endH+1);
-  const PX = 1.1, H = (endH-startH)*60*PX;
-  const mins = iso => { const t = NBF.time(iso); return (+t.slice(0,2))*60 + (+t.slice(3,5)) - startH*60; };
-  const label = new Intl.DateTimeFormat("nl-NL",{day:"numeric",month:"long",timeZone:"UTC"});
-  const wkBk = bk.filter(b=>b.status!=="cancelled");
-  const rev = wkBk.filter(b=>b.payment_method).reduce((a,b)=>a+amount(b),0);
-  const toPay = wkBk.filter(b=>stateOf(b)==="open").length;
-  body.innerHTML = `
-    <div class="toolbar"><div class="grp"><button class="round" id="pw" aria-label="Vorige week">‹</button><button class="round" id="nw" aria-label="Volgende week">›</button>
-      <button class="btn small ghost" id="tw">Vandaag</button>
-      <b style="font-family:var(--display);font-stretch:125%;font-weight:500;color:var(--ink-d);font-size:16px;margin-left:6px">${label.format(new Date(days[0]+"T12:00:00Z"))} – ${label.format(new Date(days[6]+"T12:00:00Z"))}</b></div>
-      <div class="grp"><button class="btn small ghost" id="cal">Koppel Apple / Google Agenda</button></div>
-      <div class="grp muted" style="font-size:13px;width:100%;justify-content:flex-end">${wkBk.length} afspraken · ${NBF.euro(rev)} afgerekend${toPay?` · <span class="badge open">${toPay} nog afrekenen</span>`:""}</div></div>
-    <div class="wkwrap"><div class="wk">
-      <div class="hd"></div>${days.map(d=>{ const w=new Date(d+"T12:00:00Z"); return `<div class="hd ${d===today?"today":""}">${new Intl.DateTimeFormat("nl-NL",{weekday:"short",timeZone:"UTC"}).format(w)}<b>${w.getUTCDate()}</b></div>`; }).join("")}
+  const hOf = d => (hrs||[]).find(x=>x.weekday===((new Date(d+"T12:00:00Z").getUTCDay()+6)%7)+1);
+  const live = bk.filter(b=>b.status!=="cancelled");
+  const paid = live.filter(b=>b.payment_method), rev = paid.reduce((a,b)=>a+amount(b),0);
+  const toPay = live.filter(b=>stateOf(b)==="open").length;
+  const expected = live.filter(b=>!b.payment_method && b.status!=="no_show").reduce((a,b)=>a+b.price_cents,0);
+  const ns = live.filter(b=>b.status==="no_show").length;
+  const f = o => new Intl.DateTimeFormat("nl-NL",{...o,timeZone:"UTC"}), D = x => new Date(x+"T12:00:00Z"), cap = x => x.charAt(0).toUpperCase()+x.slice(1);
+  const label = agMode==="dag" ? cap(f({weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(D(agDate)))
+    : agMode==="week" ? `${f({day:"numeric",month:"long"}).format(D(days[0]))} – ${f({day:"numeric",month:"long",year:"numeric"}).format(D(days[6]))}`
+    : cap(f({month:"long",year:"numeric"}).format(D(fromYmd)));
+
+  let main = "";
+  if (agMode === "maand") {
+    const lead = (D(fromYmd).getUTCDay()+6)%7, n = Math.round((D(toYmd)-D(fromYmd))/864e5);
+    main = `<div class="mcal agm">${["ma","di","wo","do","vr","za","zo"].map(w=>`<div class="wd">${w}</div>`).join("")}${"<span class='pad'></span>".repeat(lead)}${
+      [...Array(n)].map((_,i)=>{ const d = NBF.addDays(fromYmd,i), list = live.filter(b=>dayKey(b.starts_at)===d), h = hOf(d);
+        const dicht = (bl||[]).some(k=>dayKey(k.starts_at)<=d && dayKey(new Date(new Date(k.ends_at)-1))>=d);
+        return `<button data-day="${d}" class="${list.length?"has":""} ${d===today?"today":""} ${!list.length&&!(h&&h.is_open)?"closed":""}"><span class="n">${i+1}${dicht?' <small class="muted">· dicht</small>':""}</span>
+          <span class="mini">${list.slice(0,3).map(b=>`<i>${NBF.time(b.starts_at)} ${esc(String(b.customer_name).split(" ")[0])}</i>`).join("")}${list.length>3?`<i>+${list.length-3} meer</i>`:""}</span></button>`; }).join("")}</div>
+      <p class="muted" style="font-size:13px">Klik op een dag om die dag te openen.</p>`;
+  } else {
+    const open = (hrs||[]).filter(h=>h.is_open);
+    let startH = Math.min(9, ...open.map(h=>+h.open_time.slice(0,2))), endH = Math.max(17, ...open.map(h=>Math.ceil(+h.close_time.slice(0,2) + (+h.close_time.slice(3,5)>0?1:0))));
+    live.forEach(b => { const s=+NBF.time(b.starts_at).slice(0,2), e=+NBF.time(b.ends_at).slice(0,2)+1; startH=Math.min(startH,s); endH=Math.max(endH,Math.min(24,e)); });
+    startH = Math.max(0,startH-1); endH = Math.min(24,endH+1);
+    const PX = agMode==="dag" ? 1.6 : 1.1, H = (endH-startH)*60*PX;
+    const mins = iso => { const t = NBF.time(iso); return (+t.slice(0,2))*60 + (+t.slice(3,5)) - startH*60; };
+    const ev = b => { const s = stateOf(b);
+      return agMode==="dag"
+        ? `<b>${NBF.time(b.starts_at)} – ${NBF.time(b.ends_at)} · ${esc(b.customer_name)}</b>${esc(fullSvc(b))} · ${NBF.euro(b.price_cents)} ${badge(b)}<span class="evx">${esc(b.customer_phone||"")}${b.note?` · “${esc(b.note)}”`:""}</span>`
+        : `<b>${NBF.time(b.starts_at)} ${esc(b.customer_name)}</b>${esc(fullSvc(b))}`; };
+    main = `<div class="wkwrap"><div class="wk ${agMode==="dag"?"wk1":""}">
+      <div class="hd"></div>${days.map(d=>{ const w=D(d); return `<div class="hd ${d===today?"today":""}" ${agMode==="week"?`data-day="${d}" style="cursor:pointer" title="Open deze dag"`:""}>${f({weekday:agMode==="dag"?"long":"short"}).format(w)}<b>${w.getUTCDate()}</b></div>`; }).join("")}
       <div class="hours" style="height:${H}px">${[...Array(endH-startH+1)].map((_,i)=>`<div class="hlab" style="top:${i*60*PX}px">${String(startH+i).padStart(2,"0")}:00</div>`).join("")}</div>
-      ${days.map((d,i)=>{
-        const h = (hrs||[]).find(x=>x.weekday===i+1);
+      ${days.map(d=>{
+        const h = hOf(d);
         let inner = [...Array(endH-startH)].map((_,j)=>`<div class="hl" style="top:${j*60*PX}px"></div>`).join("");
         if (h && h.is_open) { const o=(+h.open_time.slice(0,2))*60+(+h.open_time.slice(3,5))-startH*60, c=(+h.close_time.slice(0,2))*60+(+h.close_time.slice(3,5))-startH*60;
-          inner += `<div style="position:absolute;left:0;right:0;top:0;height:${o*PX}px;background:#FBF9F6"></div><div style="position:absolute;left:0;right:0;top:${c*PX}px;bottom:0;background:#FBF9F6"></div>`; }
+          inner += `<div style="position:absolute;left:0;right:0;top:0;height:${o*PX}px;background:#FBF9F6"></div><div style="position:absolute;left:0;right:0;top:${c*PX}px;bottom:0;background:#FBF9F6"></div>`;
+          if (settings.lunch_start && settings.lunch_end) { const ls=(+settings.lunch_start.slice(0,2))*60+(+settings.lunch_start.slice(3,5))-startH*60, le=(+settings.lunch_end.slice(0,2))*60+(+settings.lunch_end.slice(3,5))-startH*60;
+            inner += `<div class="lunch" style="top:${ls*PX}px;height:${(le-ls)*PX}px">Lunch</div>`; } }
         (bl||[]).forEach(k=>{ const ks = dayKey(k.starts_at) < d ? 0 : mins(k.starts_at); const ke = dayKey(new Date(new Date(k.ends_at)-1)) > d ? (endH-startH)*60 : mins(k.ends_at);
           if (dayKey(k.starts_at) <= d && dayKey(new Date(new Date(k.ends_at)-1)) >= d) inner += `<div class="ev blk" style="top:${Math.max(0,ks)*PX}px;height:${Math.max(18,(ke-Math.max(0,ks))*PX-2)}px"><b>Dicht</b>${esc(k.reason||"")}</div>`; });
-        wkBk.filter(b=>dayKey(b.starts_at)===d).forEach(b=>{ const t=mins(b.starts_at), len=mins(b.ends_at)-t; const s=stateOf(b);
-          inner += `<div class="ev ${s==="paid"?"paid":s==="ns"?"ns":""}" data-id="${b.id}" style="top:${t*PX}px;height:${Math.max(22,len*PX-2)}px"><b>${NBF.time(b.starts_at)} ${esc(b.customer_name)}</b>${esc(fullSvc(b))}</div>`; });
-        if (d===today) { const n = new Date(); const nm = mins(n.toISOString()); if (nm>0 && nm<(endH-startH)*60) inner += `<div class="now" style="top:${nm*PX}px"></div>`; }
+        live.filter(b=>dayKey(b.starts_at)===d).forEach(b=>{ const t=mins(b.starts_at), len=mins(b.ends_at)-t; const s=stateOf(b);
+          inner += `<div class="ev ${s==="paid"?"paid":s==="ns"?"ns":""}" data-id="${b.id}" style="top:${t*PX}px;height:${Math.max(22,len*PX-2)}px">${ev(b)}</div>`; });
+        if (d===today) { const nm = mins(new Date().toISOString()); if (nm>0 && nm<(endH-startH)*60) inner += `<div class="now" style="top:${nm*PX}px"></div>`; }
         return `<div class="col ${h&&h.is_open?"":"closed"}" style="height:${H}px">${inner}</div>`;
       }).join("")}
     </div></div>
-    <p class="muted" style="font-size:13px;margin-top:10px">Klik op een afspraak om af te rekenen (pin of contant), "niet gekomen" te zetten of te annuleren.</p>`;
-  $("#pw").onclick = () => { weekStart = NBF.addDays(weekStart,-7); viewAgenda(); };
-  $("#nw").onclick = () => { weekStart = NBF.addDays(weekStart,7); viewAgenda(); };
-  $("#tw").onclick = () => { weekStart = mondayOf(today); viewAgenda(); };
+    <p class="muted" style="font-size:13px;margin-top:10px">Klik op een afspraak om af te rekenen (pin of contant), "niet gekomen" te zetten of te annuleren.${agMode==="week"?" Klik op een dag bovenin om alleen die dag te zien.":""}</p>`;
+  }
+
+  body.innerHTML = `
+    <div class="toolbar"><div class="grp"><div class="seg">${["dag","week","maand"].map(m=>`<button data-m="${m}" class="${m===agMode?"on":""}">${cap(m)}</button>`).join("")}</div>
+        <button class="round" id="pw" aria-label="Vorige">‹</button><button class="round" id="nw" aria-label="Volgende">›</button>
+        <button class="btn small ghost" id="tw">Vandaag</button><input type="date" id="agd" value="${agDate}" aria-label="Ga naar datum"></div>
+      <div class="grp"><button class="btn small ghost" id="cal">Koppel Apple / Google Agenda</button></div></div>
+    <div class="ovlab" style="font-size:20px;margin:4px 0 12px">${label}</div>
+    <div class="stat"><div><b>${live.length - ns}</b><span>Afspraken</span></div><div><b>${NBF.euro(rev)}</b><span>Afgerekend</span><small>${paid.filter(b=>b.payment_method==="pin").length} pin · ${paid.filter(b=>b.payment_method==="contant").length} contant</small></div><div><b>${NBF.euro(expected)}</b><span>Nog te ontvangen</span>${toPay?`<small>${toPay} nog afrekenen</small>`:""}</div>${ns?`<div><b>${ns}</b><span>Niet gekomen</span></div>`:""}</div>
+    ${main}`;
+  const go = () => viewAgenda();
+  body.querySelectorAll(".seg [data-m]").forEach(x => x.onclick = () => { agMode = x.dataset.m; go(); });
+  const step = dir => { agDate = agMode==="dag" ? NBF.addDays(agDate,dir) : agMode==="week" ? NBF.addDays(agDate,7*dir) : ymdShift(agDate,dir); go(); };
+  $("#pw").onclick = () => step(-1); $("#nw").onclick = () => step(1);
+  $("#tw").onclick = () => { agDate = today; go(); };
+  $("#agd").onchange = e => { if (e.target.value) { agDate = e.target.value; go(); } };
+  body.querySelectorAll("[data-day]").forEach(x => x.onclick = () => { agDate = x.dataset.day; agMode = "dag"; go(); });
   $("#cal").onclick = openCalendarLink;
   body.querySelectorAll(".ev[data-id]").forEach(x => x.onclick = () => openBooking(bk.find(b=>b.id===x.dataset.id)));
 }
@@ -312,7 +356,7 @@ async function openCalendarLink(){
 
 /* ---------- AFSPRAKEN (lijst) ---------- */
 let ovMode = "week", ovDate = null;
-const ymdShift = (ymd, m) => { const d = new Date(ymd+"T12:00:00Z"); d.setUTCDate(1); d.setUTCMonth(d.getUTCMonth()+m); return NBF.ymd(d); };
+function ymdShift(ymd, m){ const d = new Date(ymd+"T12:00:00Z"); d.setUTCDate(1); d.setUTCMonth(d.getUTCMonth()+m); return d.toISOString().slice(0,10); }
 function ovRange(mode, d){
   if (mode === "dag") return [d, NBF.addDays(d,1)];
   if (mode === "week") { const m = mondayOf(d); return [m, NBF.addDays(m,7)]; }
