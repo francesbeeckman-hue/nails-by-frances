@@ -62,6 +62,13 @@ const templates = {
 <p style="margin:0 0 16px"><b style="color:#4A4744">Adres</b><br><a href="${MAPS}" style="color:#4E3606">${ADDR}</a></p>
 <p style="margin:0;font-size:13px">Lukt het toch niet? Laat het zo snel mogelijk weten via <a href="https://wa.me/31648886908" style="color:#4E3606">WhatsApp</a>.</p>`)
   }),
+  reminderHour: b => ({
+    subject: `Tot zo! Je afspraak om ${time(b.starts_at)} bij Nail Bar by Fran`,
+    html: layout("Tot zo", `${h1(`Tot zo, ${first(b.customer_name)}!`)}<p style="margin:0">Over ongeveer een uur zien we je in de salon.</p>${card(b)}
+<p style="margin:0 0 16px"><b style="color:#4A4744">Adres</b><br><a href="${MAPS}" style="color:#4E3606">${ADDR}</a></p>
+${btn(MAPS, "Route plannen")}
+<p style="margin:18px 0 0;font-size:13px">Iets later? Laat het even weten via <a href="https://wa.me/31648886908" style="color:#4E3606">WhatsApp</a>.</p>`)
+  }),
   cancelled: b => ({
     subject: `Je afspraak van ${dateLow(b.starts_at)} is geannuleerd`,
     html: layout("Afspraak geannuleerd", `${h1(`Je afspraak is geannuleerd`)}<p style="margin:0">Hoi ${first(b.customer_name)}, deze afspraak gaat niet door:</p>${card(b)}
