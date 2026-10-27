@@ -119,6 +119,13 @@
 </div></footer>
 <a class="wa-float" href="https://wa.me/31648886908" target="_blank" rel="noopener" aria-label="Stuur een WhatsApp-bericht"><svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><path fill="currentColor" d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3zm0 23.7c-2 0-4-.5-5.7-1.6l-.4-.2-3.9 1 1-3.8-.3-.4A10.7 10.7 0 1 1 16 26.7zm5.9-8c-.3-.2-1.9-1-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7 0a8.8 8.8 0 0 1-4.4-3.8c-.3-.6.3-.5 1-1.7.1-.2 0-.4 0-.5l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6a1.2 1.2 0 0 0-.9.4 3.6 3.6 0 0 0-1.1 2.7 6.3 6.3 0 0 0 1.3 3.3 14.4 14.4 0 0 0 5.5 4.9c2 .9 2.8 1 3.9.8a3.3 3.3 0 0 0 2.1-1.5 2.7 2.7 0 0 0 .2-1.5c-.1-.2-.3-.3-.6-.4z"/></svg></a>
 
+<div class="promo" id="promo" hidden role="dialog" aria-modal="true" aria-label="Nieuw in de salon: Twenty Pro">
+  <div class="promo-box">
+    <button class="promo-x" id="promoX" aria-label="Sluiten">&times;</button>
+    <picture><source srcset="/img/twenty-pro.webp" type="image/webp"><img src="/img/twenty-pro.jpg" alt="Twenty Pro in de salon. Nieuwe behandelingen: Hard Gel €60 en Hard Gel + Gellak €65. Vanaf 1 december wordt de gellak treatment €5 duurder." width="942" height="1670"></picture>
+    <a class="btn arrow promo-cta" href="#boeken" id="promoCta">Plan je afspraak</a>
+  </div>
+</div>
 <script src="/js/supabase.js"></script>
 <script src="/config.js"></script>
 <script>
@@ -286,6 +293,26 @@ function stepDone(){
 }
 
 loadServices();
+// Pop-up Twenty Pro: na 5 seconden, 1x per bezoek, t/m 30 november 2026
+(() => {
+  const until = new Date("2026-12-01T00:00:00+01:00");
+  if (new Date() >= until) return;
+  let seen = false; try { seen = sessionStorage.getItem("promo-twenty") === "1"; } catch {}
+  if (seen) return;
+  const el = document.getElementById("promo"); if (!el) return;
+  const close = () => { el.classList.remove("on"); setTimeout(() => el.hidden = true, 250); document.removeEventListener("keydown", esc); };
+  const esc = e => { if (e.key === "Escape") close(); };
+  setTimeout(() => {
+    el.hidden = false; requestAnimationFrame(() => el.classList.add("on"));
+    try { sessionStorage.setItem("promo-twenty", "1"); } catch {}
+    document.addEventListener("keydown", esc);
+    document.getElementById("promoX").focus({ preventScroll: true });
+  }, 5000);
+  el.addEventListener("click", e => { if (e.target === el) close(); });
+  document.getElementById("promoX").onclick = close;
+  document.getElementById("promoCta").addEventListener("click", close);
+})();
+
 
 // Mobiel menu + header-schaduw bij scrollen
 const nav = document.getElementById("nav"), burger = document.getElementById("burger");
