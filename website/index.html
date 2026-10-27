@@ -293,7 +293,7 @@ function stepDone(){
 }
 
 loadServices();
-// Pop-up Twenty Pro: na 5 seconden, 1x per bezoek, t/m 30 november 2026
+// Pop-up Twenty Pro: na 2,5 seconden, 1x per bezoek, t/m 30 november 2026
 (() => {
   const until = new Date("2026-12-01T00:00:00+01:00");
   if (new Date() >= until) return;
@@ -307,7 +307,7 @@ loadServices();
     try { sessionStorage.setItem("promo-twenty", "1"); } catch {}
     document.addEventListener("keydown", esc);
     document.getElementById("promoX").focus({ preventScroll: true });
-  }, 5000);
+  }, 2500);
   el.addEventListener("click", e => { if (e.target === el) close(); });
   document.getElementById("promoX").onclick = close;
   document.getElementById("promoCta").addEventListener("click", close);
