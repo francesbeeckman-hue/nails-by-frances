@@ -251,12 +251,14 @@ async function viewAgenda(){
   else if (agMode === "week") { const m = mondayOf(agDate); days = [...Array(7)].map((_,i)=>NBF.addDays(m,i)); fromYmd = m; toYmd = NBF.addDays(m,7); }
   else { fromYmd = agDate.slice(0,8)+"01"; toYmd = ymdShift(fromYmd,1); days = []; }
   const fromISO = NBF.toISO(fromYmd), toISO = NBF.toISO(toYmd);
-  const [bk, { data: bl }, { data: hrs }] = await Promise.all([
+  const [bk, { data: bl }, { data: hrs }, { data: xo }] = await Promise.all([
     allBookings(fromISO, toISO),
     db.from("blocks").select("*").lt("starts_at", toISO).gt("ends_at", fromISO),
-    db.from("opening_hours").select("*").order("weekday")
+    db.from("opening_hours").select("*").order("weekday"),
+    db.from("extra_open_days").select("*").gte("day", fromYmd).lt("day", toYmd)
   ]);
-  const hOf = d => (hrs||[]).find(x=>x.weekday===((new Date(d+"T12:00:00Z").getUTCDay()+6)%7)+1);
+  const hOf = d => { const x = (xo||[]).find(e=>e.day===d); if (x) return { is_open:true, open_time:x.open_time, close_time:x.close_time };
+    return (hrs||[]).find(x=>x.weekday===((new Date(d+"T12:00:00Z").getUTCDay()+6)%7)+1); };
   const live = bk.filter(b=>b.status!=="cancelled");
   const paid = live.filter(b=>b.payment_method), rev = paid.reduce((a,b)=>a+amount(b),0);
   const toPay = live.filter(b=>stateOf(b)==="open").length;
@@ -599,6 +601,33 @@ async function viewBlocks(){
     const { count } = await db.from("bookings").select("id",{count:"exact",head:true}).eq("status","confirmed").lt("starts_at", rows.at(-1).ends_at).gt("ends_at", rows[0].starts_at);
     viewBlocks();
     if (count) setTimeout(()=>alert(`Let op: er staan in deze periode al ${count} afspraak/afspraken. Die blijven staan. Annuleer ze zo nodig in de agenda.`), 200);
+  };
+  extraOpen(body);
+}
+
+/* ---------- EXTRA OPEN DAG ---------- */
+async function extraOpen(body){
+  const today = NBF.ymd(new Date());
+  const card = document.createElement("div"); card.className = "card"; body.appendChild(card);
+  const { data, error } = await db.from("extra_open_days").select("*").gte("day", today).order("day");
+  if (error) { card.innerHTML = `<h3>Extra open dag</h3><p class="muted">Plak eerst database-update 009 (extra open dag) in Supabase.</p>`; return; }
+  const fmt = d => new Intl.DateTimeFormat("nl-NL",{weekday:"long",day:"numeric",month:"long",year:"numeric",timeZone:"UTC"}).format(new Date(d+"T12:00:00Z"));
+  card.innerHTML = `<h3>Extra open dag</h3><p class="muted" style="margin-bottom:16px;font-size:14px">Open op een dag waarop je normaal dicht bent, of met andere tijden dan normaal. Klanten kunnen dan online boeken binnen deze tijden (de lunchpauze blijft gelden).</p>
+    <form id="xf"><div class="grid4">
+      <label>Datum<input type="date" name="d" required min="${today}"></label>
+      <label>Van<input type="time" name="o" value="09:00" step="900" required></label>
+      <label>Tot<input type="time" name="c" value="17:00" step="900" required></label>
+    </div><button class="btn small">Openzetten</button><div id="xm"></div></form>
+    <div style="margin-top:18px">${data.length ? data.map(x=>`<div class="appt"><div class="tm">${x.open_time.slice(0,5)}<small>tot ${x.close_time.slice(0,5)}</small></div>
+      <div><span class="who" style="text-transform:capitalize">${fmt(x.day)}</span><small>Extra open</small></div>
+      <div class="acts"><button class="btn small ghost" data-xdel="${x.day}">Verwijderen</button></div></div>`).join("") : `<p class="muted">Geen extra open dagen gepland.</p>`}</div>`;
+  card.querySelectorAll("[data-xdel]").forEach(b => b.onclick = async () => { await db.from("extra_open_days").delete().eq("day", b.dataset.xdel); viewBlocks(); });
+  card.querySelector("#xf").onsubmit = async e => {
+    e.preventDefault(); const v = Object.fromEntries(new FormData(e.target));
+    if (!v.d || !v.o || !v.c || v.c <= v.o) return flash(card.querySelector("#xm"), "Kies een datum en een eindtijd na de begintijd.", "err");
+    const { error } = await db.from("extra_open_days").upsert({ day: v.d, open_time: v.o, close_time: v.c });
+    if (error) return flash(card.querySelector("#xm"), NBF.errMsg(error), "err");
+    viewBlocks();
   };
 }
 
