@@ -1,4 +1,4 @@
-// Haalt de Instagram-feed van @nailbarbyfran op via Behold en bewaart hem 6 uur in de Vercel-cache,
+// Haalt de Instagram-feed van @nailstudiobyfrances op via Behold en bewaart hem 6 uur in de Vercel-cache,
 // zodat het gratis Behold-plan (1.200 weergaven/maand) niet opraakt.
 const FEED = "https://feeds.behold.so/CVi0OI84mYnBTNgomVNm";
 
@@ -13,7 +13,7 @@ module.exports = async (req, res) => {
       .map(p => ({
         url: p.permalink,
         img: (p.sizes && p.sizes.medium && p.sizes.medium.mediaUrl) || p.thumbnailUrl || p.mediaUrl,
-        alt: (p.prunedCaption || p.caption || "Instagram-post van @nailbarbyfran").split("\n")[0].slice(0, 120),
+        alt: (p.prunedCaption || p.caption || "Instagram-post van @nailstudiobyfrances").split("\n")[0].slice(0, 120),
         video: p.mediaType === "VIDEO"
       }));
     res.setHeader("Content-Type", "application/json; charset=utf-8");

@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Beheer — Nail Bar by Fran</title>
+<title>Beheer — Nail Studio by Frances</title>
 <meta name="robots" content="noindex,nofollow">
 <link rel="preload" href="/fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/style.css">
@@ -117,8 +117,8 @@ table.tbl{width:100%;border-collapse:collapse;font-size:14px}
 </style>
 </head>
 <body>
-<div class="announce">Beheer · Nail Bar by Fran</div>
-<header class="nav"><div class="wrap"><a class="logo" href="/"><img src="/logo.png" alt="Nail Bar by Fran"></a><nav class="links"><div class="r"><button class="btn small ghost" id="out" hidden>Uitloggen</button></div></nav></div></header>
+<div class="announce">Beheer · Nail Studio by Frances</div>
+<header class="nav"><div class="wrap"><a class="logo" href="/"><img src="/logo.png" alt="Nail Studio by Frances"></a><nav class="links"><div class="r"><button class="btn small ghost" id="out" hidden>Uitloggen</button></div></nav></div></header>
 <section style="padding-top:36px"><div class="wrap" id="app"><span class="spinner"></span></div></section>
 
 <script src="/js/supabase.js"></script>
@@ -218,6 +218,11 @@ function openBooking(b){
       <div class="row2"><button class="btn small" data-pay="pin">Pin</button><button class="btn small" data-pay="contant">Contant</button>
       ${past && s!=="ns" ? `<button class="btn small ghost danger" id="ns">Niet gekomen</button>` : ""}
       ${s==="paid"||s==="ns" ? `<button class="btn small ghost" id="undo">Terugzetten</button>` : ""}</div></div>`}
+    ${b.status==="confirmed" ? `<div class="card" style="padding:18px;margin:12px 0 0"><b style="font-weight:500;color:var(--ink-d)">Verzetten naar ander moment</b>
+      <div class="row2" style="margin-top:10px;align-items:flex-end"><label style="margin:0;flex:1 1 140px">Nieuwe datum<input type="date" id="mvd" value="${dayKey(b.starts_at)}"></label>
+      <label style="margin:0;flex:1 1 110px">Nieuwe tijd<input type="time" id="mvt" step="300" value="${NBF.time(b.starts_at)}"></label>
+      <button class="btn small" id="mv">Verzetten</button></div>
+      <small class="muted" style="display:block;margin-top:8px">Duur blijft ${NBF.dur(Math.round((new Date(b.ends_at)-new Date(b.starts_at))/60000))}.${isPlaceholder(b.customer_email)?" Geen e-mailadres bekend: laat het de klant zelf weten.":" De klant krijgt automatisch een mail met de nieuwe tijd."}</small></div>` : ""}
     <div class="row2" style="justify-content:space-between">
       ${b.status==="confirmed" && !past ? `<button class="btn small ghost danger" id="cx">Afspraak annuleren</button>` : "<span></span>"}
       <button class="btn small ghost" id="close">Sluiten</button></div><div id="mm"></div></div>`;
@@ -236,6 +241,16 @@ function openBooking(b){
   });
   const ns = m.querySelector("#ns"); if (ns) ns.onclick = () => upd({ status:"no_show", payment_method:null, paid_cents:null, paid_at:null });
   const undo = m.querySelector("#undo"); if (undo) undo.onclick = () => upd({ status:"confirmed", payment_method:null, paid_cents:null, paid_at:null });
+  const mv = m.querySelector("#mv"); if (mv) mv.onclick = async () => {
+    const d = m.querySelector("#mvd").value, t = m.querySelector("#mvt").value;
+    if (!d || !t) return flash(m.querySelector("#mm"), "Kies een datum en tijd.", "err");
+    const start = NBF.toISO(d, t), len = new Date(b.ends_at) - new Date(b.starts_at);
+    if (start === new Date(b.starts_at).toISOString()) return flash(m.querySelector("#mm"), "Dat is hetzelfde moment als nu.", "err");
+    const end = new Date(new Date(start).getTime() + len).toISOString();
+    const { error } = await db.from("bookings").update({ starts_at:start, ends_at:end, reminder_sent_at:null, reminder_1h_sent_at:null }).eq("id", b.id);
+    if (error) return flash(m.querySelector("#mm"), /no_overlap|exclusion|overlap/.test(error.message) ? "Op dat moment staat al een andere afspraak." : NBF.errMsg(error), "err");
+    close(); refresh();
+  };
   const cx = m.querySelector("#cx"); if (cx) cx.onclick = () => { if (confirm("Afspraak annuleren? Laat de klant het even weten.")) upd({ status:"cancelled", cancelled_at: nowISO() }); };
 }
 
@@ -432,9 +447,10 @@ async function viewBookings(){
         <label>Behandeling<select name="svc" required><option value="" disabled selected>Kies een behandeling…</option>${[...new Set(services.filter(s=>s.active && !s.is_extra).map(s=>s.category||"Overig"))].map(c=>`<optgroup label="${esc(c)}">${services.filter(s=>s.active && !s.is_extra && (s.category||"Overig")===c).map(s=>`<option value="${s.id}">${esc(s.name)} · ${NBF.euro(s.price_cents)} · ${NBF.dur(s.duration_min)}</option>`).join("")}</optgroup>`).join("")}</select></label>
         <label>Datum<input type="date" name="d" required></label>
         <label>Tijd<input type="time" name="t" required step="300"></label>
-        <label>Naam<input name="name" required minlength="2"></label>
-        <label>Telefoon<input name="phone" required minlength="6"></label>
-        <label>E-mail (optioneel)<input name="email" type="email"></label>
+        <label>Naam<input name="name" required minlength="2" list="dl-name" autocomplete="off" placeholder="Typ om een klant te zoeken"></label>
+        <label>Telefoon<input name="phone" required minlength="6" list="dl-phone" autocomplete="off"></label>
+        <label>E-mail<input name="email" type="email" placeholder="Voor bevestiging en herinneringen"></label>
+        <datalist id="dl-name"></datalist><datalist id="dl-phone"></datalist>
       </div>${services.some(s=>s.active&&s.is_extra) ? `<div style="display:flex;gap:16px;flex-wrap:wrap;margin:4px 0 16px">${services.filter(s=>s.active&&s.is_extra).map(s=>`<label class="chk"><input type="checkbox" name="x" value="${s.id}"> ${esc(s.name)} (+${NBF.euro(s.price_cents)})</label>`).join("")}</div>`:""}
       <button class="btn small">Toevoegen</button><div id="am"></div></form></div>
     <div id="ov" style="margin-top:28px"><h3 style="font-size:26px;margin-bottom:14px">Overzicht</h3>
@@ -454,6 +470,20 @@ async function viewBookings(){
   $("#ovd").onchange = e => { if (e.target.value) { ovDate = e.target.value; go(); } };
   body.querySelectorAll("[data-day]").forEach(x => x.onclick = () => { ovDate = x.dataset.day; ovMode = "dag"; go(); });
   body.querySelectorAll("[data-month]").forEach(x => x.onclick = () => { ovDate = x.dataset.month; ovMode = "maand"; go(); });
+  // Bekende klanten: naam of telefoon typen vult de rest automatisch in
+  (async () => {
+    const { data } = await db.from("bookings").select("customer_name,customer_phone,customer_email,starts_at").order("starts_at", { ascending:false }).limit(3000);
+    const byKey = new Map();
+    (data||[]).forEach(r => { const k = r.customer_phone.replace(/\D/g,""); const c = byKey.get(k);
+      if (!c) byKey.set(k, { name:r.customer_name, phone:r.customer_phone, email:isPlaceholder(r.customer_email)?"":r.customer_email });
+      else if (!c.email && !isPlaceholder(r.customer_email)) c.email = r.customer_email; });
+    const list = [...byKey.values()];
+    $("#dl-name").innerHTML = list.map(c=>`<option value="${esc(c.name)}">${esc(c.phone)}${c.email?" · "+esc(c.email):""}</option>`).join("");
+    $("#dl-phone").innerHTML = list.map(c=>`<option value="${esc(c.phone)}">${esc(c.name)}</option>`).join("");
+    const f = $("#af"), fill = c => { if (!c) return; f.name.value = c.name; f.phone.value = c.phone; if (c.email && !f.email.value) f.email.value = c.email; };
+    f.name.addEventListener("change", () => fill(list.find(c => c.name.toLowerCase() === f.name.value.trim().toLowerCase())));
+    f.phone.addEventListener("change", () => { const k = f.phone.value.replace(/\D/g,""); if (k.length >= 6) fill(list.find(c => c.phone.replace(/\D/g,"") === k)); });
+  })();
   $("#af").onsubmit = async e => {
     e.preventDefault(); const f = new FormData(e.target), v = Object.fromEntries(f); const s = services.find(x=>x.id===v.svc);
     if (!s) return flash($("#am"), "Kies eerst een behandeling.", "err");
@@ -501,7 +531,7 @@ async function viewCustomers(){
   draw();
   $("#q").oninput = e => draw(e.target.value);
   $("#exp").onclick = () => csv([["Naam","Telefoon","E-mail","Bezoeken","Niet gekomen","Eerste bezoek","Laatste bezoek","Volgende afspraak","Totaal besteed"],
-    ...list.map(c=>[c.name,c.phone,c.email,c.visits,c.ns,c.first?dayKey(c.first):"",c.last?dayKey(c.last):"",c.next?dayKey(c.next):"",(c.spent/100).toFixed(2).replace(".",",")])], "klanten-nailbarbyfran.csv");
+    ...list.map(c=>[c.name,c.phone,c.email,c.visits,c.ns,c.first?dayKey(c.first):"",c.last?dayKey(c.last):"",c.next?dayKey(c.next):"",(c.spent/100).toFixed(2).replace(".",",")])], "klanten-nailstudiobyfrances.csv");
 }
 
 /* ---------- BOEKHOUDING ---------- */
@@ -556,7 +586,7 @@ async function viewBooks(){
     ...mp.map(b=>{ const a = amount(b), v = vatOf(a); return [dayKey(b.starts_at), NBF.time(b.starts_at), b.customer_name, fullSvc(b), b.payment_method, (a/100).toFixed(2).replace(".",","), rate+"%", (v/100).toFixed(2).replace(".",","), ((a-v)/100).toFixed(2).replace(".",",")]; }),
     [], ["Totaal","","","","",(mRev/100).toFixed(2).replace(".",","),"",(vatOf(mRev)/100).toFixed(2).replace(".",","),((mRev-vatOf(mRev))/100).toFixed(2).replace(".",",")],
     ["Waarvan pin","","","","",(mPin/100).toFixed(2).replace(".",",")], ["Waarvan contant","","","","",(mCash/100).toFixed(2).replace(".",",")]],
-    `omzet-${bookMonth}-nailbarbyfran.csv`);
+    `omzet-${bookMonth}-nailstudiobyfrances.csv`);
 }
 
 /* ---------- AGENDA DICHTZETTEN ---------- */

@@ -18,6 +18,8 @@ module.exports = async (req, res) => {
   if (p.type === "INSERT" && b.status === "confirmed") {
     if (hasEmail) await go(b.customer_email, "confirm");
     if (b.source !== "admin") await go(FRAN, "franNew");
+  } else if (p.type === "UPDATE" && b.status === "confirmed" && old && old.starts_at !== b.starts_at && new Date(b.starts_at) > new Date()) {
+    if (hasEmail) await go(b.customer_email, "moved");
   } else if (p.type === "UPDATE" && b.status === "cancelled" && old && old.status !== "cancelled" && new Date(b.starts_at) > new Date()) {
     if (hasEmail) await go(b.customer_email, "cancelled");
     await go(FRAN, "franCancelled");

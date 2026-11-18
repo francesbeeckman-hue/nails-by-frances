@@ -1,7 +1,7 @@
 // Gedeelde helpers voor e-mails (Resend) en Supabase (server-side). Bestanden met _ worden geen eigen endpoint.
 const SUPABASE_URL = "https://bfzuycyluaiepsgiainq.supabase.co";
 const SITE = (process.env.SITE_URL || "https://www.nailbarbyfran.nl").replace(/\/$/, "");
-const FROM = process.env.MAIL_FROM || "Nail Bar by Fran <afspraken@nailbarbyfran.nl>";
+const FROM = process.env.MAIL_FROM || "Nail Studio by Frances <afspraken@nailbarbyfran.nl>";
 const FRAN = process.env.FRAN_EMAIL || "nails.byfran@outlook.com";
 const TZ = "Europe/Amsterdam";
 const ADDR = "Magdalena van Weerdenburglaan 36, 1934 GL Egmond aan den Hoef";
@@ -13,17 +13,17 @@ const dateLow = iso => new Intl.DateTimeFormat("nl-NL", { timeZone: TZ, weekday:
 const dateLong = iso => { const s = dateLow(iso); return s.charAt(0).toUpperCase() + s.slice(1); };
 const time = iso => new Intl.DateTimeFormat("nl-NL", { timeZone: TZ, hour: "2-digit", minute: "2-digit" }).format(new Date(iso));
 const svcName = b => b.service_name + (b.extras ? " + " + String(b.extras).split(", ").join(" + ") : "");
-const isPlaceholder = e => !e || /@nailsbyfrances\.nl$|@nailbarbyfran\.nl$/i.test(e);
+const isPlaceholder = e => !e || /@nailsbyfrances\.nl$|@nailstudiobyfrances\.nl$/i.test(e);
 const cancelUrl = b => `${SITE}/annuleren?t=${b.cancel_token}`;
 
 function ics(b) {
   const f = iso => new Date(iso).toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
   const e = s => String(s).replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n");
-  return ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Nail Bar by Fran//NL", "METHOD:PUBLISH", "BEGIN:VEVENT",
-    `UID:${b.id}@nailbarbyfran`, `DTSTAMP:${f(new Date().toISOString())}`, `DTSTART:${f(b.starts_at)}`, `DTEND:${f(b.ends_at)}`,
-    `SUMMARY:${e(svcName(b) + " – Nail Bar by Fran")}`, `LOCATION:${e(ADDR)}`,
+  return ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Nail Studio by Frances//NL", "METHOD:PUBLISH", "BEGIN:VEVENT",
+    `UID:${b.id}@nailstudiobyfrances`, `DTSTAMP:${f(new Date().toISOString())}`, `DTSTART:${f(b.starts_at)}`, `DTEND:${f(b.ends_at)}`,
+    `SUMMARY:${e(svcName(b) + " – Nail Studio by Frances")}`, `LOCATION:${e(ADDR)}`,
     `DESCRIPTION:${e("Annuleren of verzetten? " + cancelUrl(b))}`,
-    "BEGIN:VALARM", "TRIGGER:-PT2H", "ACTION:DISPLAY", "DESCRIPTION:Nail Bar by Fran", "END:VALARM",
+    "BEGIN:VALARM", "TRIGGER:-PT2H", "ACTION:DISPLAY", "DESCRIPTION:Nail Studio by Frances", "END:VALARM",
     "END:VEVENT", "END:VCALENDAR"].join("\r\n");
 }
 
@@ -32,11 +32,11 @@ function layout(title, inner) {
 <body style="margin:0;background:#F7F4EF;font-family:Helvetica,Arial,sans-serif;color:#686561">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F7F4EF;padding:28px 12px"><tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:18px;overflow:hidden">
-<tr><td align="center" style="padding:30px 24px 10px"><img src="${SITE}/logo.png" alt="Nail Bar by Fran" width="150" style="display:block;width:150px;height:auto"></td></tr>
+<tr><td align="center" style="padding:30px 24px 10px"><img src="${SITE}/logo.png" alt="Nail Studio by Frances" width="150" style="display:block;width:150px;height:auto"></td></tr>
 <tr><td style="padding:10px 32px 30px;font-size:15px;line-height:1.6">${inner}</td></tr>
 <tr><td style="background:#EFE8DE;padding:18px 32px;font-size:12px;line-height:1.6;color:#686561">
-Nail Bar by Fran · <a href="${MAPS}" style="color:#4E3606">${ADDR}</a><br>
-<a href="https://wa.me/31648886908" style="color:#4E3606">WhatsApp</a> · <a href="https://instagram.com/nailbarbyfran" style="color:#4E3606">Instagram</a> · <a href="${SITE}/voorwaarden" style="color:#4E3606">Voorwaarden</a> · <a href="${SITE}/privacy" style="color:#4E3606">Privacy</a>
+Nail Studio by Frances · <a href="${MAPS}" style="color:#4E3606">${ADDR}</a><br>
+<a href="https://wa.me/31648886908" style="color:#4E3606">WhatsApp</a> · <a href="https://instagram.com/nailstudiobyfrances" style="color:#4E3606">Instagram</a> · <a href="${SITE}/voorwaarden" style="color:#4E3606">Voorwaarden</a> · <a href="${SITE}/privacy" style="color:#4E3606">Privacy</a>
 </td></tr></table></td></tr></table></body></html>`;
 }
 const h1 = t => `<h1 style="font-size:22px;color:#4A4744;font-weight:600;margin:6px 0 14px">${t}</h1>`;
@@ -50,20 +50,28 @@ const first = n => esc(String(n || "").trim().split(/\s+/)[0]);
 const templates = {
   confirm: b => ({
     subject: `Je afspraak is bevestigd · ${dateLow(b.starts_at)} ${time(b.starts_at)}`,
-    html: layout("Afspraak bevestigd", `${h1(`Tot snel, ${first(b.customer_name)}!`)}<p style="margin:0">Je afspraak bij Nail Bar by Fran staat vast.</p>${card(b)}
+    html: layout("Afspraak bevestigd", `${h1(`Tot snel, ${first(b.customer_name)}!`)}<p style="margin:0">Je afspraak bij Nail Studio by Frances staat vast.</p>${card(b)}
 <p style="margin:0 0 6px"><b style="color:#4A4744">Adres</b><br><a href="${MAPS}" style="color:#4E3606">${ADDR}</a></p>
 <p style="margin:16px 0">In de bijlage zit je afspraak voor je agenda.</p>
 <p style="margin:0 0 20px;font-size:13px">Kun je niet? Annuleer of verzet <b>tot 24 uur van tevoren</b> kosteloos.</p>${btn(cancelUrl(b), "Afspraak annuleren")}`),
     attach: true
   }),
   reminder: b => ({
-    subject: `Herinnering: morgen om ${time(b.starts_at)} bij Nail Bar by Fran`,
+    subject: `Herinnering: morgen om ${time(b.starts_at)} bij Nail Studio by Frances`,
     html: layout("Herinnering", `${h1(`Tot morgen, ${first(b.customer_name)}!`)}<p style="margin:0">Een kleine herinnering aan je afspraak.</p>${card(b)}
 <p style="margin:0 0 16px"><b style="color:#4A4744">Adres</b><br><a href="${MAPS}" style="color:#4E3606">${ADDR}</a></p>
 <p style="margin:0;font-size:13px">Lukt het toch niet? Laat het zo snel mogelijk weten via <a href="https://wa.me/31648886908" style="color:#4E3606">WhatsApp</a>.</p>`)
   }),
+  moved: b => ({
+    subject: `Je afspraak is verzet · ${dateLow(b.starts_at)} ${time(b.starts_at)}`,
+    html: layout("Afspraak verzet", `${h1(`Je afspraak is verzet`)}<p style="margin:0">Hoi ${first(b.customer_name)}, je afspraak staat nu op dit nieuwe moment:</p>${card(b)}
+<p style="margin:0 0 6px"><b style="color:#4A4744">Adres</b><br><a href="${MAPS}" style="color:#4E3606">${ADDR}</a></p>
+<p style="margin:16px 0">In de bijlage zit de nieuwe tijd voor je agenda.</p>
+<p style="margin:0 0 20px;font-size:13px">Past dit toch niet? Laat het even weten via <a href="https://wa.me/31648886908" style="color:#4E3606">WhatsApp</a>.</p>${btn(cancelUrl(b), "Afspraak annuleren")}`),
+    attach: true
+  }),
   reminderHour: b => ({
-    subject: `Tot zo! Je afspraak om ${time(b.starts_at)} bij Nail Bar by Fran`,
+    subject: `Tot zo! Je afspraak om ${time(b.starts_at)} bij Nail Studio by Frances`,
     html: layout("Tot zo", `${h1(`Tot zo, ${first(b.customer_name)}!`)}<p style="margin:0">Over ongeveer een uur zien we je in de salon.</p>${card(b)}
 <p style="margin:0 0 16px"><b style="color:#4A4744">Adres</b><br><a href="${MAPS}" style="color:#4E3606">${ADDR}</a></p>
 ${btn(MAPS, "Route plannen")}
@@ -90,7 +98,7 @@ async function sendMail(to, tpl, b) {
   if (!key) throw new Error("RESEND_API_KEY ontbreekt");
   const t = templates[tpl](b);
   const body = { from: FROM, to: [to], subject: t.subject, html: t.html, reply_to: FRAN };
-  if (t.attach) body.attachments = [{ filename: "afspraak-nailbarbyfran.ics", content: Buffer.from(ics(b)).toString("base64") }];
+  if (t.attach) body.attachments = [{ filename: "afspraak-nailstudiobyfrances.ics", content: Buffer.from(ics(b)).toString("base64") }];
   const r = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" }, body: JSON.stringify(body) });
   if (!r.ok) throw new Error(`Resend ${r.status}: ${await r.text()}`);
   return r.json();
