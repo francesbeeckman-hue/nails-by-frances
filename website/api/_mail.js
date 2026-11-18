@@ -32,7 +32,7 @@ function layout(title, inner) {
 <body style="margin:0;background:#F7F4EF;font-family:Helvetica,Arial,sans-serif;color:#686561">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F7F4EF;padding:28px 12px"><tr><td align="center">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border-radius:18px;overflow:hidden">
-<tr><td align="center" style="padding:30px 24px 10px"><img src="${SITE}/logo.png" alt="Nail Studio by Frances" width="210" style="display:block;width:210px;height:auto"></td></tr>
+<tr><td align="center" style="padding:30px 24px 10px"><img src="${SITE}/img/logo-stacked.png" alt="Nail Studio by Frances" width="170" style="display:block;width:170px;height:auto"></td></tr>
 <tr><td style="padding:10px 32px 30px;font-size:15px;line-height:1.6">${inner}</td></tr>
 <tr><td style="background:#EFE8DE;padding:18px 32px;font-size:12px;line-height:1.6;color:#686561">
 Nail Studio by Frances · <a href="${MAPS}" style="color:#4E3606">${ADDR}</a><br>
