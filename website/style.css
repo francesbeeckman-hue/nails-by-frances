@@ -287,4 +287,4 @@ footer a{color:var(--text)}
 .nav-r .sm{display:none}
 @media(max-width:480px){.nav-r .lg{display:none}.nav-r .sm{display:inline}}
 .hero-mark{position:absolute;pointer-events:none;user-select:none;top:50%;right:11%;height:62%;width:auto;transform:translateY(-50%);opacity:.45}
-@media(max-width:900px){.hero-mark{right:4%;top:50%;height:36%;opacity:.3}}
+@media(max-width:900px){.hero-mark{right:4%;top:40%;height:36%;opacity:.3}}
